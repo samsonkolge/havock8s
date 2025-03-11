@@ -1,0 +1,33 @@
+apiVersion: chaos.statefulchaos.io/v1alpha1
+kind: StatefulChaosExperiment
+metadata:
+  name: postgres-disk-failure
+spec:
+  target:
+    selector:
+      matchLabels:
+        app: postgres
+    targetType: StatefulSet
+    mode: One
+  chaosType: DiskFailure
+  duration: 5m
+  intensity: 0.3  # 30% of I/O operations will fail
+  parameters:
+    ioType: "write"      # target only write operations
+    latency: "50ms"      # add latency to operations
+    failureRate: "30%"   # percentage of operations that should fail
+  safety:
+    autoRollback: true
+    healthChecks:
+      - type: httpGet
+        path: /health
+        port: 8080
+        failureThreshold: 3
+    pauseConditions:
+      - type: metric
+        metricQuery: "sum(rate(postgres_errors_total[1m])) > 10"
+    resourceProtections:
+      - type: Namespace
+        value: kube-system  # never affect system namespaces
+      - type: Label
+        value: statefulchaos.io/protected=true  # protected resources 

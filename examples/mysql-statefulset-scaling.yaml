@@ -1,0 +1,31 @@
+apiVersion: chaos.statefulchaos.io/v1alpha1
+kind: StatefulChaosExperiment
+metadata:
+  name: mysql-statefulset-scaling
+spec:
+  target:
+    selector:
+      matchLabels:
+        app: mysql
+    targetType: StatefulSet
+    mode: All
+  chaosType: StatefulSetScaling
+  duration: 15m
+  intensity: 0.7  # 70% impact
+  parameters:
+    scaleMode: "down"     # Scale down the StatefulSet
+    scaleCount: "2"       # Scale down by 2 replicas
+    scaleMin: "1"         # Minimum 1 replica
+    allowZero: "false"    # Don't allow scaling to zero
+  safety:
+    autoRollback: true
+    healthChecks:
+      - type: tcpSocket
+        port: 3306
+        failureThreshold: 5
+    pauseConditions:
+      - type: metric
+        metricQuery: "sum(rate(mysql_global_status_threads_connected[1m])) < 1"
+    resourceProtections:
+      - type: Namespace
+        value: kube-system  # never affect system namespaces 

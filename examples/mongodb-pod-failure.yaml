@@ -1,0 +1,29 @@
+apiVersion: chaos.statefulchaos.io/v1alpha1
+kind: StatefulChaosExperiment
+metadata:
+  name: mongodb-pod-failure
+spec:
+  target:
+    selector:
+      matchLabels:
+        app: mongodb
+    targetType: StatefulSet
+    mode: One  # Only affect one pod
+  chaosType: PodFailure
+  duration: 5m
+  intensity: 0.5  # 50% impact
+  parameters:
+    gracePeriodSeconds: "30"  # Give 30 seconds for graceful termination
+    forceDelete: "false"      # Don't force delete
+    podCount: "1"             # Only terminate one pod
+  schedule:
+    cron: "0 */4 * * *"  # Every 4 hours
+  safety:
+    autoRollback: true
+    healthChecks:
+      - type: tcpSocket
+        port: 27017
+        failureThreshold: 3
+    pauseConditions:
+      - type: metric
+        metricQuery: "sum(rate(mongodb_connections[1m])) < 5" 
