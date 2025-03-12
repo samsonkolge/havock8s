@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chaos Types - Havock8s</title>
+  <link rel="stylesheet" href="/havock8s/assets/css/style.css">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Chaos Types | Havock8s</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Chaos Types" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<meta property="og:description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<link rel="canonical" href="https://samsonkolge.github.io/havock8s/chaos-types.html" />
+<meta property="og:url" content="https://samsonkolge.github.io/havock8s/chaos-types.html" />
+<meta property="og:site_name" content="Havock8s" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Chaos Types" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A cloud-native chaos engineering framework for stateful applications on Kubernetes","headline":"Chaos Types","url":"https://samsonkolge.github.io/havock8s/chaos-types.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="project-name">Havock8s</h1>
+    <h2 class="project-tagline">A cloud-native chaos engineering framework for stateful applications on Kubernetes</h2>
+    <a href="https://github.com/samsonkolge/havock8s" class="btn">View on GitHub</a>
+    <a href="https://github.com/samsonkolge/havock8s/archive/main.zip" class="btn">Download .zip</a>
+    <a href="https://github.com/samsonkolge/havock8s/archive/main.tar.gz" class="btn">Download .tar.gz</a>
+  </header>
+
+  <div class="main-content">
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/havock8s/" >Home</a></li>
+        <li><a href="/havock8s/getting-started.html" >Getting Started</a></li>
+        <li><a href="/havock8s/installation.html" >Installation</a></li>
+        <li><a href="/havock8s/chaos-types.html" class="active">Chaos Types</a></li>
+        <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+        <li><a href="/havock8s/developer-guide.html" >Developer Guide</a></li>
+        <li><a href="/havock8s/tutorials.html" >Tutorials</a></li>
+      </ul>
+    </nav>
+
+    <h1 id="chaos-types">Chaos Types</h1>
+
+<p>Havock8s provides a variety of chaos types specifically designed for testing the resilience of stateful applications. Each chaos type targets different aspects of your stateful workloads.</p>
+
+<h2 id="available-chaos-types">Available Chaos Types</h2>
+
+<div class="docs-section">
+  <div class="docs-card">
+    <h3>DiskFailure</h3>
+    <p>Simulates disk I/O failures, read/write errors, and latency for persistent volumes.</p>
+    <a href="#diskfailure">Learn more →</a>
+  </div>
+  <div class="docs-card">
+    <h3>NetworkLatency</h3>
+    <p>Introduces network latency, packet loss, and connection disruptions between stateful components.</p>
+    <a href="#networklatency">Learn more →</a>
+  </div>
+  <div class="docs-card">
+    <h3>DatabaseConnectionDisruption</h3>
+    <p>Simulates database connection failures, query timeouts, and connection pool exhaustion.</p>
+    <a href="#databaseconnectiondisruption">Learn more →</a>
+  </div>
+  <div class="docs-card">
+    <h3>PodFailure</h3>
+    <p>Causes pods in StatefulSets to fail, restart, or become unresponsive.</p>
+    <a href="#podfailure">Learn more →</a>
+  </div>
+  <div class="docs-card">
+    <h3>ResourcePressure</h3>
+    <p>Creates CPU, memory, or disk pressure on stateful workloads.</p>
+    <a href="#resourcepressure">Learn more →</a>
+  </div>
+  <div class="docs-card">
+    <h3>DataCorruption</h3>
+    <p>Simulates data corruption scenarios in persistent volumes or databases.</p>
+    <a href="#datacorruption">Learn more →</a>
+  </div>
+</div>
+
+<h2 id="detailed-chaos-type-reference">Detailed Chaos Type Reference</h2>
+
+<h3 id="diskfailure">DiskFailure</h3>
+
+<p>Simulates various types of disk failures for persistent volumes attached to stateful applications.</p>
+
+<h4 id="parameters">Parameters</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">intensity</code></td>
+      <td>Float</td>
+      <td>Percentage of I/O operations that will fail (0.0-1.0)</td>
+      <td>0.2</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">mode</code></td>
+      <td>String</td>
+      <td>Type of failure: <code class="language-plaintext highlighter-rouge">ReadFailure</code>, <code class="language-plaintext highlighter-rouge">WriteFailure</code>, <code class="language-plaintext highlighter-rouge">ReadWriteFailure</code>, <code class="language-plaintext highlighter-rouge">Latency</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ReadWriteFailure</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">latency</code></td>
+      <td>String</td>
+      <td>When mode is <code class="language-plaintext highlighter-rouge">Latency</code>, the amount of latency to add (e.g., “100ms”)</td>
+      <td>“100ms”</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">targetVolumes</code></td>
+      <td>Array</td>
+      <td>List of PVCs to target (if empty, all volumes attached to target pods)</td>
+      <td>[]</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example">Example</h4>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres-disk-failure</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">DiskFailure</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">intensity</span><span class="pi">:</span> <span class="m">0.3</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">mode</span><span class="pi">:</span> <span class="s">WriteFailure</span>
+    <span class="na">targetVolumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">postgres-data-pvc</span>
+</code></pre></div></div>
+
+<h3 id="networklatency">NetworkLatency</h3>
+
+<p>Introduces network latency, packet loss, and connection disruptions between stateful components.</p>
+
+<h4 id="parameters-1">Parameters</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">latency</code></td>
+      <td>String</td>
+      <td>Amount of latency to add (e.g., “200ms”)</td>
+      <td>“100ms”</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">jitter</code></td>
+      <td>String</td>
+      <td>Variation in latency (e.g., “50ms”)</td>
+      <td>“30ms”</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">packetLoss</code></td>
+      <td>Float</td>
+      <td>Percentage of packets to drop (0.0-1.0)</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">correlation</code></td>
+      <td>Float</td>
+      <td>Correlation between successive packet losses (0.0-1.0)</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">targetPorts</code></td>
+      <td>Array</td>
+      <td>List of ports to affect (if empty, all ports)</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">targetIPs</code></td>
+      <td>Array</td>
+      <td>List of destination IPs to affect (if empty, all IPs)</td>
+      <td>[]</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example-1">Example</h4>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">redis-network-latency</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">redis</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">NetworkLatency</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">10m</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">latency</span><span class="pi">:</span> <span class="s2">"</span><span class="s">300ms"</span>
+    <span class="na">jitter</span><span class="pi">:</span> <span class="s2">"</span><span class="s">100ms"</span>
+    <span class="na">packetLoss</span><span class="pi">:</span> <span class="m">0.05</span>
+    <span class="na">targetPorts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="m">6379</span>
+</code></pre></div></div>
+
+<h3 id="databaseconnectiondisruption">DatabaseConnectionDisruption</h3>
+
+<p>Simulates database connection failures, query timeouts, and connection pool exhaustion.</p>
+
+<h4 id="parameters-2">Parameters</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">failureType</code></td>
+      <td>String</td>
+      <td>Type of disruption: <code class="language-plaintext highlighter-rouge">ConnectionFailure</code>, <code class="language-plaintext highlighter-rouge">QueryTimeout</code>, <code class="language-plaintext highlighter-rouge">ConnectionPoolExhaustion</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ConnectionFailure</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">failureRate</code></td>
+      <td>Float</td>
+      <td>Percentage of connections/queries to affect (0.0-1.0)</td>
+      <td>0.3</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">targetPort</code></td>
+      <td>Integer</td>
+      <td>Database port to target</td>
+      <td>5432</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">queryPattern</code></td>
+      <td>String</td>
+      <td>When type is <code class="language-plaintext highlighter-rouge">QueryTimeout</code>, regex pattern of queries to affect</td>
+      <td>””</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example-2">Example</h4>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-connection-disruption</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">DatabaseConnectionDisruption</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">15m</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">failureType</span><span class="pi">:</span> <span class="s">ConnectionPoolExhaustion</span>
+    <span class="na">failureRate</span><span class="pi">:</span> <span class="m">0.5</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">3306</span>
+</code></pre></div></div>
+
+<h3 id="podfailure">PodFailure</h3>
+
+<p>Causes pods in StatefulSets to fail, restart, or become unresponsive.</p>
+
+<h4 id="parameters-3">Parameters</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">failureType</code></td>
+      <td>String</td>
+      <td>Type of failure: <code class="language-plaintext highlighter-rouge">Kill</code>, <code class="language-plaintext highlighter-rouge">Restart</code>, <code class="language-plaintext highlighter-rouge">Unresponsive</code></td>
+      <td><code class="language-plaintext highlighter-rouge">Restart</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">podIndexes</code></td>
+      <td>Array</td>
+      <td>For StatefulSets, indexes of pods to target (if empty, random selection)</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">count</code></td>
+      <td>Integer</td>
+      <td>Number of pods to affect</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">interval</code></td>
+      <td>String</td>
+      <td>For multiple pods, interval between failures</td>
+      <td>“10s”</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example-3">Example</h4>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">zookeeper-pod-failure</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">zookeeper</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">PodFailure</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">failureType</span><span class="pi">:</span> <span class="s">Kill</span>
+    <span class="na">podIndexes</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">0</span><span class="pi">,</span> <span class="nv">2</span><span class="pi">]</span>  <span class="c1"># Target first and third pods in the StatefulSet</span>
+</code></pre></div></div>
+
+<h3 id="resourcepressure">ResourcePressure</h3>
+
+<p>Creates CPU, memory, or disk pressure on stateful workloads.</p>
+
+<h4 id="parameters-4">Parameters</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">resourceType</code></td>
+      <td>String</td>
+      <td>Type of resource pressure: <code class="language-plaintext highlighter-rouge">CPU</code>, <code class="language-plaintext highlighter-rouge">Memory</code>, <code class="language-plaintext highlighter-rouge">Disk</code></td>
+      <td><code class="language-plaintext highlighter-rouge">CPU</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">intensity</code></td>
+      <td>Float</td>
+      <td>Percentage of resource to consume (0.0-1.0)</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">workers</code></td>
+      <td>Integer</td>
+      <td>Number of worker processes to create pressure</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">path</code></td>
+      <td>String</td>
+      <td>For disk pressure, path to fill</td>
+      <td>“/data”</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example-4">Example</h4>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">elasticsearch-memory-pressure</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">elasticsearch</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">ResourcePressure</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">8m</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">resourceType</span><span class="pi">:</span> <span class="s">Memory</span>
+    <span class="na">intensity</span><span class="pi">:</span> <span class="m">0.7</span>
+    <span class="na">workers</span><span class="pi">:</span> <span class="m">2</span>
+</code></pre></div></div>
+
+<h3 id="datacorruption">DataCorruption</h3>
+
+<p>Simulates data corruption scenarios in persistent volumes or databases.</p>
+
+<h4 id="parameters-5">Parameters</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">corruptionType</code></td>
+      <td>String</td>
+      <td>Type of corruption: <code class="language-plaintext highlighter-rouge">BitFlip</code>, <code class="language-plaintext highlighter-rouge">Truncate</code>, <code class="language-plaintext highlighter-rouge">Append</code>, <code class="language-plaintext highlighter-rouge">Replace</code></td>
+      <td><code class="language-plaintext highlighter-rouge">BitFlip</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">path</code></td>
+      <td>String</td>
+      <td>Path to target files</td>
+      <td>“/data”</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">filePattern</code></td>
+      <td>String</td>
+      <td>Pattern of files to corrupt</td>
+      <td>“*.db”</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">percentage</code></td>
+      <td>Float</td>
+      <td>Percentage of matching files to corrupt (0.0-1.0)</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">bytes</code></td>
+      <td>Integer</td>
+      <td>Number of bytes to corrupt</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example-5">Example</h4>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb-data-corruption</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">mongodb</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">DataCorruption</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">1m</span>  <span class="c1"># Short duration as this is destructive</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">corruptionType</span><span class="pi">:</span> <span class="s">BitFlip</span>
+    <span class="na">path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/data/db"</span>
+    <span class="na">filePattern</span><span class="pi">:</span> <span class="s2">"</span><span class="s">*.wt"</span>
+    <span class="na">percentage</span><span class="pi">:</span> <span class="m">0.05</span>
+    <span class="na">bytes</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">safety</span><span class="pi">:</span>
+    <span class="na">autoRollback</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<h2 id="safety-considerations">Safety Considerations</h2>
+
+<p>When running chaos experiments, especially those targeting stateful applications, it’s important to implement proper safety measures:</p>
+
+<div class="warning">
+  <strong>Warning:</strong> Some chaos types like DataCorruption can cause permanent data loss if not properly configured with safety mechanisms.
+</div>
+
+<p>Always use the safety parameters in your experiments:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">safety</span><span class="pi">:</span>
+  <span class="na">autoRollback</span><span class="pi">:</span> <span class="kc">true</span>  <span class="c1"># Automatically roll back if health checks fail</span>
+  <span class="na">healthChecks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">httpGet</span>
+      <span class="na">path</span><span class="pi">:</span> <span class="s">/health</span>
+      <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+      <span class="na">failureThreshold</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">maxTargetPods</span><span class="pi">:</span> <span class="m">1</span>  <span class="c1"># Limit the number of pods affected</span>
+  <span class="na">targetPercentage</span><span class="pi">:</span> <span class="m">30</span>  <span class="c1"># Only target 30% of eligible pods</span>
+</code></pre></div></div>
+
+<h2 id="creating-custom-chaos-types">Creating Custom Chaos Types</h2>
+
+<p>Havock8s is designed to be extensible. See the <a href="developer-guide.html">Developer Guide</a> for instructions on creating custom chaos types for your specific stateful application needs.</p>
+
+
+    <footer class="site-footer">
+      <span class="site-footer-owner">
+        <a href="https://github.com/samsonkolge/havock8s">Havock8s</a> is maintained by the Havock8s team.
+      </span>
+      <span class="site-footer-credits">
+        This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
+      </span>
+    </footer>
+  </div>
+</body>
+</html> 

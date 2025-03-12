@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorials - Havock8s</title>
+  <link rel="stylesheet" href="/havock8s/assets/css/style.css">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Tutorials | Havock8s</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Tutorials" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<meta property="og:description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<link rel="canonical" href="https://samsonkolge.github.io/havock8s/tutorials.html" />
+<meta property="og:url" content="https://samsonkolge.github.io/havock8s/tutorials.html" />
+<meta property="og:site_name" content="Havock8s" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Tutorials" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A cloud-native chaos engineering framework for stateful applications on Kubernetes","headline":"Tutorials","url":"https://samsonkolge.github.io/havock8s/tutorials.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="project-name">Havock8s</h1>
+    <h2 class="project-tagline">A cloud-native chaos engineering framework for stateful applications on Kubernetes</h2>
+    <a href="https://github.com/samsonkolge/havock8s" class="btn">View on GitHub</a>
+    <a href="https://github.com/samsonkolge/havock8s/archive/main.zip" class="btn">Download .zip</a>
+    <a href="https://github.com/samsonkolge/havock8s/archive/main.tar.gz" class="btn">Download .tar.gz</a>
+  </header>
+
+  <div class="main-content">
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/havock8s/" >Home</a></li>
+        <li><a href="/havock8s/getting-started.html" >Getting Started</a></li>
+        <li><a href="/havock8s/installation.html" >Installation</a></li>
+        <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
+        <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+        <li><a href="/havock8s/developer-guide.html" >Developer Guide</a></li>
+        <li><a href="/havock8s/tutorials.html" class="active">Tutorials</a></li>
+      </ul>
+    </nav>
+
+    <h1 id="tutorials">Tutorials</h1>
+
+<p>This section provides step-by-step tutorials for common Havock8s use cases. These tutorials will help you get started with chaos engineering for your stateful applications.</p>
+
+<h2 id="tutorial-list">Tutorial List</h2>
+
+<div class="docs-section">
+  <div class="docs-card">
+    <h3><a href="#postgres-disk-failure">Testing PostgreSQL Resilience to Disk Failures</a></h3>
+    <p>Learn how to test a PostgreSQL database's resilience to disk I/O failures.</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="#redis-network-partition">Simulating Network Partitions in Redis Cluster</a></h3>
+    <p>Test how a Redis cluster handles network partitions between nodes.</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="#mongodb-pod-failure">Testing MongoDB Replica Set Recovery</a></h3>
+    <p>Verify that a MongoDB replica set can recover from pod failures.</p>
+  </div>
+</div>
+
+<h2 id="postgres-disk-failure">Testing PostgreSQL Resilience to Disk Failures</h2>
+
+<p>This tutorial demonstrates how to test a PostgreSQL database’s resilience to disk I/O failures.</p>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<ul>
+  <li>Kubernetes cluster with Havock8s installed</li>
+  <li>PostgreSQL StatefulSet running in your cluster</li>
+  <li>Basic understanding of PostgreSQL architecture</li>
+</ul>
+
+<h3 id="step-1-deploy-a-postgresql-statefulset">Step 1: Deploy a PostgreSQL StatefulSet</h3>
+
+<p>If you don’t already have PostgreSQL running, you can deploy it using the following manifest:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StatefulSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">serviceName</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">postgres</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:14</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">5432</span>
+        <span class="na">env</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">POSTGRES_PASSWORD</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s">password</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">PGDATA</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s">/var/lib/postgresql/data/pgdata</span>
+        <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">postgres-data</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/lib/postgresql/data</span>
+        <span class="na">readinessProbe</span><span class="pi">:</span>
+          <span class="na">exec</span><span class="pi">:</span>
+            <span class="na">command</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">pg_isready</span>
+          <span class="na">initialDelaySeconds</span><span class="pi">:</span> <span class="m">5</span>
+          <span class="na">periodSeconds</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">volumeClaimTemplates</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">postgres-data</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">accessModes</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">ReadWriteOnce"</span> <span class="pi">]</span>
+      <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">requests</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span> <span class="s">1Gi</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">5432</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">5432</span>
+  <span class="na">clusterIP</span><span class="pi">:</span> <span class="s">None</span>
+</code></pre></div></div>
+
+<p>Apply this manifest:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> postgres.yaml
+</code></pre></div></div>
+
+<h3 id="step-2-create-a-test-database-and-table">Step 2: Create a Test Database and Table</h3>
+
+<p>Connect to the PostgreSQL pod and create a test database and table:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Connect to the PostgreSQL pod</span>
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> postgres-0 <span class="nt">--</span> bash
+
+<span class="c"># Connect to PostgreSQL</span>
+psql <span class="nt">-U</span> postgres
+
+<span class="c"># Create a test database</span>
+CREATE DATABASE testdb<span class="p">;</span>
+<span class="se">\c</span> testdb
+
+<span class="c"># Create a test table</span>
+CREATE TABLE test_data <span class="o">(</span>
+  <span class="nb">id </span>SERIAL PRIMARY KEY,
+  data TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+<span class="o">)</span><span class="p">;</span>
+
+<span class="c"># Insert some test data</span>
+INSERT INTO test_data <span class="o">(</span>data<span class="o">)</span> 
+SELECT <span class="s1">'Test data '</span> <span class="o">||</span> i 
+FROM generate_series<span class="o">(</span>1, 1000<span class="o">)</span> AS i<span class="p">;</span>
+
+<span class="c"># Exit PostgreSQL and the pod</span>
+<span class="se">\q</span>
+<span class="nb">exit</span>
+</code></pre></div></div>
+
+<h3 id="step-3-create-a-monitoring-pod">Step 3: Create a Monitoring Pod</h3>
+
+<p>Deploy a simple pod that will continuously query the database to monitor its availability:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres-monitor</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">monitor</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:14</span>
+    <span class="na">command</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">/bin/bash</span>
+    <span class="pi">-</span> <span class="s">-c</span>
+    <span class="pi">-</span> <span class="pi">|</span>
+      <span class="s">while true; do</span>
+        <span class="s">PGPASSWORD=password psql -h postgres -U postgres -d testdb -c "SELECT COUNT(*) FROM test_data;" || echo "Query failed"</span>
+        <span class="s">sleep 5</span>
+      <span class="s">done</span>
+</code></pre></div></div>
+
+<p>Apply this manifest:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> postgres-monitor.yaml
+</code></pre></div></div>
+
+<h3 id="step-4-create-a-disk-failure-experiment">Step 4: Create a Disk Failure Experiment</h3>
+
+<p>Now, create a Havock8s experiment to simulate disk I/O failures:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres-disk-failure</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">DiskFailure</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">mode</span><span class="pi">:</span> <span class="s">WriteFailure</span>
+    <span class="na">intensity</span><span class="pi">:</span> <span class="m">0.3</span>
+    <span class="na">targetVolumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">postgres-data</span>
+  <span class="na">safety</span><span class="pi">:</span>
+    <span class="na">autoRollback</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">healthChecks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">exec</span>
+        <span class="na">command</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">pg_isready</span>
+        <span class="na">failureThreshold</span><span class="pi">:</span> <span class="m">5</span>
+</code></pre></div></div>
+
+<p>Apply this experiment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> postgres-disk-failure.yaml
+</code></pre></div></div>
+
+<h3 id="step-5-monitor-the-experiment">Step 5: Monitor the Experiment</h3>
+
+<p>Watch the logs of the monitoring pod to see how PostgreSQL handles the disk failures:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl logs <span class="nt">-f</span> postgres-monitor
+</code></pre></div></div>
+
+<p>You should see some queries failing with errors related to disk I/O.</p>
+
+<h3 id="step-6-analyze-the-results">Step 6: Analyze the Results</h3>
+
+<p>After the experiment completes, check the PostgreSQL logs to see how it handled the disk failures:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl logs postgres-0
+</code></pre></div></div>
+
+<p>Look for error messages, recovery attempts, and any data integrity issues.</p>
+
+<h3 id="step-7-verify-data-integrity">Step 7: Verify Data Integrity</h3>
+
+<p>Connect to PostgreSQL again and verify that the data is still intact:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nb">exec</span> <span class="nt">-it</span> postgres-0 <span class="nt">--</span> bash
+psql <span class="nt">-U</span> postgres <span class="nt">-d</span> testdb
+SELECT COUNT<span class="o">(</span><span class="k">*</span><span class="o">)</span> FROM test_data<span class="p">;</span>
+<span class="se">\q</span>
+<span class="nb">exit</span>
+</code></pre></div></div>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>This tutorial demonstrated how to test PostgreSQL’s resilience to disk failures using Havock8s. You can modify the experiment parameters to test different failure scenarios, such as read failures, latency, or varying intensities.</p>
+
+<h2 id="redis-network-partition">Simulating Network Partitions in Redis Cluster</h2>
+
+<p>This tutorial shows how to test a Redis cluster’s behavior during network partitions.</p>
+
+<h3 id="prerequisites-1">Prerequisites</h3>
+
+<ul>
+  <li>Kubernetes cluster with Havock8s installed</li>
+  <li>Redis cluster running in your Kubernetes cluster</li>
+  <li>Basic understanding of Redis cluster architecture</li>
+</ul>
+
+<h3 id="step-1-deploy-a-redis-cluster">Step 1: Deploy a Redis Cluster</h3>
+
+<p>If you don’t already have a Redis cluster running, you can deploy one using the following manifest:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StatefulSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">redis</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">redis</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">serviceName</span><span class="pi">:</span> <span class="s">redis</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">redis</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">redis</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">redis</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">redis:6</span>
+        <span class="na">command</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">redis-server</span>
+        <span class="pi">-</span> <span class="s">--cluster-enabled yes</span>
+        <span class="pi">-</span> <span class="s">--cluster-config-file /data/nodes.conf</span>
+        <span class="pi">-</span> <span class="s">--cluster-node-timeout </span><span class="m">5000</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">6379</span>
+        <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">redis-data</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/data</span>
+  <span class="na">volumeClaimTemplates</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">redis-data</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">accessModes</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">ReadWriteOnce"</span> <span class="pi">]</span>
+      <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">requests</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span> <span class="s">1Gi</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">redis</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">redis</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">6379</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">6379</span>
+  <span class="na">clusterIP</span><span class="pi">:</span> <span class="s">None</span>
+</code></pre></div></div>
+
+<p>Apply this manifest:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> redis.yaml
+</code></pre></div></div>
+
+<h3 id="step-2-initialize-the-redis-cluster">Step 2: Initialize the Redis Cluster</h3>
+
+<p>Initialize the Redis cluster:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Get the pod IPs</span>
+<span class="nv">PODS</span><span class="o">=</span><span class="si">$(</span>kubectl get pods <span class="nt">-l</span> <span class="nv">app</span><span class="o">=</span>redis <span class="nt">-o</span> <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">'{range.items[*]}{.status.podIP}{" "}{end}'</span><span class="si">)</span>
+<span class="nv">POD_IPS</span><span class="o">=(</span><span class="nv">$PODS</span><span class="o">)</span>
+
+<span class="c"># Create the cluster</span>
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> redis-0 <span class="nt">--</span> redis-cli <span class="nt">--cluster</span> create <span class="k">${</span><span class="nv">POD_IPS</span><span class="p">[0]</span><span class="k">}</span>:6379 <span class="k">${</span><span class="nv">POD_IPS</span><span class="p">[1]</span><span class="k">}</span>:6379 <span class="k">${</span><span class="nv">POD_IPS</span><span class="p">[2]</span><span class="k">}</span>:6379 <span class="nt">--cluster-replicas</span> 0
+</code></pre></div></div>
+
+<h3 id="step-3-create-a-network-partition-experiment">Step 3: Create a Network Partition Experiment</h3>
+
+<p>Create a Havock8s experiment to simulate a network partition between Redis nodes:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">redis-network-partition</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">redis</span>
+    <span class="na">mode</span><span class="pi">:</span> <span class="s">Fixed</span>
+    <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1"</span>  <span class="c1"># Target only one pod</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">NetworkLatency</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">3m</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">packetLoss</span><span class="pi">:</span> <span class="m">1.0</span>  <span class="c1"># 100% packet loss = complete partition</span>
+    <span class="na">targetPorts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="m">6379</span>
+  <span class="na">safety</span><span class="pi">:</span>
+    <span class="na">autoRollback</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<p>Apply this experiment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> redis-network-partition.yaml
+</code></pre></div></div>
+
+<h3 id="step-4-monitor-the-cluster-state">Step 4: Monitor the Cluster State</h3>
+
+<p>Watch the Redis cluster state during the experiment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># In one terminal, watch the cluster info</span>
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> redis-0 <span class="nt">--</span> watch <span class="nt">-n</span> 1 redis-cli cluster info
+
+<span class="c"># In another terminal, watch the cluster nodes</span>
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> redis-0 <span class="nt">--</span> watch <span class="nt">-n</span> 1 redis-cli cluster nodes
+</code></pre></div></div>
+
+<h3 id="step-5-test-cluster-availability">Step 5: Test Cluster Availability</h3>
+
+<p>During the experiment, test if the cluster is still available for reads and writes:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Connect to a Redis pod</span>
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> redis-1 <span class="nt">--</span> bash
+
+<span class="c"># Use redis-cli to set and get values</span>
+redis-cli <span class="nt">-c</span> <span class="nb">set </span>testkey <span class="s2">"Hello Chaos"</span>
+redis-cli <span class="nt">-c</span> get testkey
+
+<span class="c"># Exit the pod</span>
+<span class="nb">exit</span>
+</code></pre></div></div>
+
+<h3 id="step-6-analyze-the-results-1">Step 6: Analyze the Results</h3>
+
+<p>After the experiment completes, analyze how the Redis cluster handled the network partition:</p>
+
+<ul>
+  <li>Did the cluster detect the partition?</li>
+  <li>How long did it take to detect the partition?</li>
+  <li>Did the cluster continue to serve requests?</li>
+  <li>Did any data loss occur?</li>
+</ul>
+
+<h3 id="conclusion-1">Conclusion</h3>
+
+<p>This tutorial demonstrated how to test a Redis cluster’s resilience to network partitions using Havock8s. You can modify the experiment parameters to test different network failure scenarios, such as partial packet loss, latency, or targeting specific nodes.</p>
+
+<h2 id="mongodb-pod-failure">Testing MongoDB Replica Set Recovery</h2>
+
+<p>This tutorial shows how to test a MongoDB replica set’s ability to recover from pod failures.</p>
+
+<h3 id="prerequisites-2">Prerequisites</h3>
+
+<ul>
+  <li>Kubernetes cluster with Havock8s installed</li>
+  <li>MongoDB replica set running in your Kubernetes cluster</li>
+  <li>Basic understanding of MongoDB replica set architecture</li>
+</ul>
+
+<h3 id="step-1-deploy-a-mongodb-replica-set">Step 1: Deploy a MongoDB Replica Set</h3>
+
+<p>If you don’t already have a MongoDB replica set running, you can deploy one using the following manifest:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StatefulSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mongodb</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">serviceName</span><span class="pi">:</span> <span class="s">mongodb</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">mongodb</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">mongodb</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">mongo:4.4</span>
+        <span class="na">command</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">mongod</span>
+        <span class="pi">-</span> <span class="s">--replSet</span>
+        <span class="pi">-</span> <span class="s">rs0</span>
+        <span class="pi">-</span> <span class="s">--bind_ip_all</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">27017</span>
+        <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb-data</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/data/db</span>
+  <span class="na">volumeClaimTemplates</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb-data</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">accessModes</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">ReadWriteOnce"</span> <span class="pi">]</span>
+      <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">requests</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span> <span class="s">1Gi</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mongodb</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">27017</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">27017</span>
+  <span class="na">clusterIP</span><span class="pi">:</span> <span class="s">None</span>
+</code></pre></div></div>
+
+<p>Apply this manifest:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> mongodb.yaml
+</code></pre></div></div>
+
+<h3 id="step-2-initialize-the-mongodb-replica-set">Step 2: Initialize the MongoDB Replica Set</h3>
+
+<p>Initialize the MongoDB replica set:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Connect to the first MongoDB pod</span>
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> mongodb-0 <span class="nt">--</span> bash
+
+<span class="c"># Connect to MongoDB shell</span>
+mongo
+
+<span class="c"># Initialize the replica set</span>
+rs.initiate<span class="o">({</span>
+  _id: <span class="s2">"rs0"</span>,
+  members: <span class="o">[</span>
+    <span class="o">{</span> _id: 0, host: <span class="s2">"mongodb-0.mongodb:27017"</span> <span class="o">}</span>,
+    <span class="o">{</span> _id: 1, host: <span class="s2">"mongodb-1.mongodb:27017"</span> <span class="o">}</span>,
+    <span class="o">{</span> _id: 2, host: <span class="s2">"mongodb-2.mongodb:27017"</span> <span class="o">}</span>
+  <span class="o">]</span>
+<span class="o">})</span>
+
+<span class="c"># Check the replica set status</span>
+rs.status<span class="o">()</span>
+
+<span class="c"># Create a test database and collection</span>
+use testdb
+db.testcollection.insertMany<span class="o">([</span>
+  <span class="o">{</span> name: <span class="s2">"Document 1"</span>, value: 1 <span class="o">}</span>,
+  <span class="o">{</span> name: <span class="s2">"Document 2"</span>, value: 2 <span class="o">}</span>,
+  <span class="o">{</span> name: <span class="s2">"Document 3"</span>, value: 3 <span class="o">}</span>
+<span class="o">])</span>
+
+<span class="c"># Exit MongoDB and the pod</span>
+<span class="nb">exit
+exit</span>
+</code></pre></div></div>
+
+<h3 id="step-3-create-a-pod-failure-experiment">Step 3: Create a Pod Failure Experiment</h3>
+
+<p>Create a Havock8s experiment to simulate pod failures in the MongoDB replica set:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb-pod-failure</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">mongodb</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">PodFailure</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">parameters</span><span class="pi">:</span>
+    <span class="na">failureType</span><span class="pi">:</span> <span class="s">Kill</span>
+    <span class="na">podIndexes</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">0</span><span class="pi">]</span>  <span class="c1"># Target the primary node (mongodb-0)</span>
+  <span class="na">safety</span><span class="pi">:</span>
+    <span class="na">autoRollback</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<p>Apply this experiment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> mongodb-pod-failure.yaml
+</code></pre></div></div>
+
+<h3 id="step-4-monitor-the-replica-set-status">Step 4: Monitor the Replica Set Status</h3>
+
+<p>Watch the replica set status during the experiment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Connect to one of the remaining MongoDB pods</span>
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> mongodb-1 <span class="nt">--</span> mongo
+
+<span class="c"># Check the replica set status</span>
+rs.status<span class="o">()</span>
+
+<span class="c"># Keep checking the status to see the election of a new primary</span>
+</code></pre></div></div>
+
+<h3 id="step-5-test-replica-set-availability">Step 5: Test Replica Set Availability</h3>
+
+<p>During the experiment, test if the replica set is still available for reads and writes:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># In the MongoDB shell</span>
+use testdb
+
+<span class="c"># Try to write data (this should work once a new primary is elected)</span>
+db.testcollection.insertOne<span class="o">({</span> name: <span class="s2">"Document during chaos"</span>, value: 42 <span class="o">})</span>
+
+<span class="c"># Read data</span>
+db.testcollection.find<span class="o">()</span>
+</code></pre></div></div>
+
+<h3 id="step-6-analyze-the-results-2">Step 6: Analyze the Results</h3>
+
+<p>After the experiment completes and the failed pod recovers, analyze how the MongoDB replica set handled the failure:</p>
+
+<ul>
+  <li>How quickly was a new primary elected?</li>
+  <li>Was there any data loss?</li>
+  <li>Did the failed pod successfully rejoin the replica set?</li>
+  <li>Were there any unexpected behaviors?</li>
+</ul>
+
+<h3 id="conclusion-2">Conclusion</h3>
+
+<p>This tutorial demonstrated how to test a MongoDB replica set’s resilience to pod failures using Havock8s. You can modify the experiment parameters to test different failure scenarios, such as multiple pod failures, repeated failures, or targeting specific nodes in the replica set.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you’ve completed these tutorials, you can:</p>
+
+<ol>
+  <li>Explore other chaos types available in Havock8s</li>
+  <li>Create more complex experiments with multiple chaos types</li>
+  <li>Integrate Havock8s experiments into your CI/CD pipeline</li>
+  <li>Develop custom chaos types for your specific applications</li>
+</ol>
+
+<p>Check out the <a href="api-reference.html">API Reference</a> and <a href="developer-guide.html">Developer Guide</a> for more information.</p>
+
+
+    <footer class="site-footer">
+      <span class="site-footer-owner">
+        <a href="https://github.com/samsonkolge/havock8s">Havock8s</a> is maintained by the Havock8s team.
+      </span>
+      <span class="site-footer-credits">
+        This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
+      </span>
+    </footer>
+  </div>
+</body>
+</html> 

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Havock8s Documentation - Havock8s</title>
+  <link rel="stylesheet" href="/havock8s/assets/css/style.css">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Havock8s Documentation | Havock8s</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Havock8s Documentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<meta property="og:description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<link rel="canonical" href="https://samsonkolge.github.io/havock8s/" />
+<meta property="og:url" content="https://samsonkolge.github.io/havock8s/" />
+<meta property="og:site_name" content="Havock8s" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Havock8s Documentation" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"A cloud-native chaos engineering framework for stateful applications on Kubernetes","headline":"Havock8s Documentation","name":"Havock8s","url":"https://samsonkolge.github.io/havock8s/"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="project-name">Havock8s</h1>
+    <h2 class="project-tagline">A cloud-native chaos engineering framework for stateful applications on Kubernetes</h2>
+    <a href="https://github.com/samsonkolge/havock8s" class="btn">View on GitHub</a>
+    <a href="https://github.com/samsonkolge/havock8s/archive/main.zip" class="btn">Download .zip</a>
+    <a href="https://github.com/samsonkolge/havock8s/archive/main.tar.gz" class="btn">Download .tar.gz</a>
+  </header>
+
+  <div class="main-content">
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/havock8s/" class="active">Home</a></li>
+        <li><a href="/havock8s/getting-started.html" >Getting Started</a></li>
+        <li><a href="/havock8s/installation.html" >Installation</a></li>
+        <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
+        <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+        <li><a href="/havock8s/developer-guide.html" >Developer Guide</a></li>
+        <li><a href="/havock8s/tutorials.html" >Tutorials</a></li>
+      </ul>
+    </nav>
+
+    <h1 id="havock8s">Havock8s</h1>
+
+<p><img src="assets/images/logo.png" alt="Havock8s Logo" /></p>
+
+<p>Havock8s is a cloud-native chaos engineering framework specifically designed for stateful applications running on Kubernetes. While many existing chaos engineering tools focus on stateless microservices, Havock8s specializes in testing and enhancing the resilience of stateful components such as databases, caching systems, and persistent storage.</p>
+
+<h2 id="why-havock8s">Why Havock8s?</h2>
+
+<p>Traditional chaos engineering tools often focus on stateless services where instances can be easily replaced. However, stateful applications present unique challenges:</p>
+
+<ul>
+  <li>Data persistence requirements</li>
+  <li>Complex recovery procedures</li>
+  <li>State synchronization across replicas</li>
+  <li>Storage dependencies</li>
+</ul>
+
+<p>Havock8s addresses these challenges with targeted chaos experiments designed specifically for stateful workloads.</p>
+
+<h2 id="key-features">Key Features</h2>
+
+<h3 id="customizable-failure-scenarios">Customizable Failure Scenarios</h3>
+<ul>
+  <li>Pre-defined chaos scenarios for stateful workloads (disk I/O failures, database connection issues, persistent volume disruptions)</li>
+  <li>Custom experiment framework for defining specialized failure modes</li>
+  <li>Targeted chaos injection for specific components of stateful applications</li>
+</ul>
+
+<h3 id="kubernetes-native-integration">Kubernetes-Native Integration</h3>
+<ul>
+  <li>Operates as a Kubernetes Operator using Custom Resource Definitions (CRDs)</li>
+  <li>Seamless integration with Prometheus for monitoring and OpenTelemetry for tracing</li>
+  <li>Works with standard Kubernetes resources and StatefulSets</li>
+</ul>
+
+<h3 id="safety-and-rollback-mechanisms">Safety and Rollback Mechanisms</h3>
+<ul>
+  <li>Built-in guardrails to prevent cascading failures</li>
+  <li>Automated rollback features for safe production use</li>
+  <li>Gradual chaos intensity adjustments</li>
+</ul>
+
+<h3 id="extensible-plugin-architecture">Extensible Plugin Architecture</h3>
+<ul>
+  <li>Community-driven plugin system for adding new failure modes</li>
+  <li>Extensible interfaces for custom integrations</li>
+  <li>Open-source foundation for collaboration</li>
+</ul>
+
+<h2 id="documentation">Documentation</h2>
+
+<div class="docs-section">
+  <div class="docs-card">
+    <h3><a href="getting-started.html">Getting Started</a></h3>
+    <p>Quick introduction to Havock8s with setup instructions</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="installation.html">Installation Guide</a></h3>
+    <p>Detailed installation instructions for different environments</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="chaos-types.html">Chaos Types</a></h3>
+    <p>Overview of available chaos scenarios and their parameters</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="api-reference.html">API Reference</a></h3>
+    <p>Complete reference of all API objects and their fields</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="developer-guide.html">Developer Guide</a></h3>
+    <p>Instructions for developers who want to contribute or extend</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="tutorials.html">Tutorials</a></h3>
+    <p>Step-by-step guides for common use cases</p>
+  </div>
+</div>
+
+<h2 id="quick-start">Quick Start</h2>
+
+<p>To run a simple chaos experiment against a stateful application:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres-disk-failure</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">DiskFailure</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">intensity</span><span class="pi">:</span> <span class="m">0.3</span>  <span class="c1"># 30% of I/O operations will fail</span>
+  <span class="na">safety</span><span class="pi">:</span>
+    <span class="na">autoRollback</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">healthChecks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">httpGet</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">/health</span>
+        <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+        <span class="na">failureThreshold</span><span class="pi">:</span> <span class="m">3</span>
+</code></pre></div></div>
+
+<h2 id="community">Community</h2>
+
+<ul>
+  <li><a href="https://github.com/havock8s/havock8s/issues">GitHub Issues</a></li>
+  <li><a href="#">Slack Channel</a></li>
+  <li><a href="https://twitter.com/havock8s">Twitter</a></li>
+</ul>
+
+<h2 id="license">License</h2>
+
+<p>Havock8s is open-source software licensed under the Apache License 2.0.</p>
+
+
+    <footer class="site-footer">
+      <span class="site-footer-owner">
+        <a href="https://github.com/samsonkolge/havock8s">Havock8s</a> is maintained by the Havock8s team.
+      </span>
+      <span class="site-footer-credits">
+        This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
+      </span>
+    </footer>
+  </div>
+</body>
+</html> 
