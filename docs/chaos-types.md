@@ -1,272 +1,253 @@
 ---
-layout: default
+layout: documentation
 title: Chaos Types
+prev_page: installation.html
+prev_title: Installation Guide
+next_page: api-reference.html
+next_title: API Reference
 ---
 
 # Chaos Types
 
-Havock8s provides a variety of chaos types specifically designed for testing the resilience of stateful applications. Each chaos type targets different aspects of your stateful workloads.
+<div class="callout callout-info">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    Understanding Chaos Types
+  </div>
+  <p>Havock8s offers a variety of chaos types specifically designed to test the resilience of stateful applications on Kubernetes.</p>
+</div>
+
+## Introduction to Chaos Types
+
+Havock8s provides specialized chaos experiments for stateful applications. Each chaos type targets a specific aspect of your application's infrastructure or behavior to help you discover how your system responds to different failure modes.
+
+<div class="article-section">
+  <p>When selecting a chaos type, consider:</p>
+  <ul>
+    <li>What aspect of your application you want to test</li>
+    <li>The potential impact on your production environment</li>
+    <li>The specific failure modes you want to simulate</li>
+    <li>The expected behavior of your application under these conditions</li>
+  </ul>
+</div>
 
 ## Available Chaos Types
 
+Havock8s offers the following chaos types, organized by category:
+
+### Storage Chaos
+
 <div class="docs-section">
   <div class="docs-card">
-    <h3>DiskFailure</h3>
-    <p>Simulates disk I/O failures, read/write errors, and latency for persistent volumes.</p>
-    <a href="#diskfailure">Learn more →</a>
-  </div>
-  <div class="docs-card">
-    <h3>NetworkLatency</h3>
-    <p>Introduces network latency, packet loss, and connection disruptions between stateful components.</p>
-    <a href="#networklatency">Learn more →</a>
-  </div>
-  <div class="docs-card">
-    <h3>DatabaseConnectionDisruption</h3>
-    <p>Simulates database connection failures, query timeouts, and connection pool exhaustion.</p>
-    <a href="#databaseconnectiondisruption">Learn more →</a>
-  </div>
-  <div class="docs-card">
-    <h3>PodFailure</h3>
-    <p>Causes pods in StatefulSets to fail, restart, or become unresponsive.</p>
-    <a href="#podfailure">Learn more →</a>
-  </div>
-  <div class="docs-card">
-    <h3>ResourcePressure</h3>
-    <p>Creates CPU, memory, or disk pressure on stateful workloads.</p>
-    <a href="#resourcepressure">Learn more →</a>
-  </div>
-  <div class="docs-card">
-    <h3>DataCorruption</h3>
-    <p>Simulates data corruption scenarios in persistent volumes or databases.</p>
-    <a href="#datacorruption">Learn more →</a>
-  </div>
-</div>
-
-## Detailed Chaos Type Reference
-
-<h3 id="diskfailure">DiskFailure</h3>
-
-Simulates various types of disk failures for persistent volumes attached to stateful applications.
-
-#### Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `intensity` | Float | Percentage of I/O operations that will fail (0.0-1.0) | 0.2 |
-| `mode` | String | Type of failure: `ReadFailure`, `WriteFailure`, `ReadWriteFailure`, `Latency` | `ReadWriteFailure` |
-| `latency` | String | When mode is `Latency`, the amount of latency to add (e.g., "100ms") | "100ms" |
-| `targetVolumes` | Array | List of PVCs to target (if empty, all volumes attached to target pods) | [] |
-
-#### Example
-
-```yaml
-apiVersion: chaos.havock8s.io/v1alpha1
-kind: havock8sExperiment
-metadata:
-  name: postgres-disk-failure
-spec:
-  target:
-    selector:
-      app: postgres
+    <div class="docs-card-header">
+      <h3>DiskFailure</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Simulates disk I/O errors, latency, or complete disk failures to test how your application handles storage problems.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>mode</strong>: latency, error, or corruption</li>
+        <li><strong>intensity</strong>: 0.0-1.0 (percentage of operations affected)</li>
+        <li><strong>devices</strong>: List of target devices (optional)</li>
+        <li><strong>paths</strong>: List of target filesystem paths (optional)</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
   chaosType: DiskFailure
-  duration: 5m
+  mode: error
   intensity: 0.3
-  parameters:
-    mode: WriteFailure
-    targetVolumes:
-      - postgres-data-pvc
-```
-
-<h3 id="networklatency">NetworkLatency</h3>
-
-Introduces network latency, packet loss, and connection disruptions between stateful components.
-
-#### Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `latency` | String | Amount of latency to add (e.g., "200ms") | "100ms" |
-| `jitter` | String | Variation in latency (e.g., "50ms") | "30ms" |
-| `packetLoss` | Float | Percentage of packets to drop (0.0-1.0) | 0.0 |
-| `correlation` | Float | Correlation between successive packet losses (0.0-1.0) | 0.0 |
-| `targetPorts` | Array | List of ports to affect (if empty, all ports) | [] |
-| `targetIPs` | Array | List of destination IPs to affect (if empty, all IPs) | [] |
-
-#### Example
-
-```yaml
-apiVersion: chaos.havock8s.io/v1alpha1
-kind: havock8sExperiment
-metadata:
-  name: redis-network-latency
-spec:
-  target:
-    selector:
-      app: redis
-  chaosType: NetworkLatency
-  duration: 10m
-  parameters:
-    latency: "300ms"
-    jitter: "100ms"
-    packetLoss: 0.05
-    targetPorts:
-      - 6379
-```
-
-<h3 id="databaseconnectiondisruption">DatabaseConnectionDisruption</h3>
-
-Simulates database connection failures, query timeouts, and connection pool exhaustion.
-
-#### Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `failureType` | String | Type of disruption: `ConnectionFailure`, `QueryTimeout`, `ConnectionPoolExhaustion` | `ConnectionFailure` |
-| `failureRate` | Float | Percentage of connections/queries to affect (0.0-1.0) | 0.3 |
-| `targetPort` | Integer | Database port to target | 5432 |
-| `queryPattern` | String | When type is `QueryTimeout`, regex pattern of queries to affect | "" |
-
-#### Example
-
-```yaml
-apiVersion: chaos.havock8s.io/v1alpha1
-kind: havock8sExperiment
-metadata:
-  name: mysql-connection-disruption
-spec:
-  target:
-    selector:
-      app: mysql
-  chaosType: DatabaseConnectionDisruption
-  duration: 15m
-  parameters:
-    failureType: ConnectionPoolExhaustion
-    failureRate: 0.5
-    targetPort: 3306
-```
-
-<h3 id="podfailure">PodFailure</h3>
-
-Causes pods in StatefulSets to fail, restart, or become unresponsive.
-
-#### Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `failureType` | String | Type of failure: `Kill`, `Restart`, `Unresponsive` | `Restart` |
-| `podIndexes` | Array | For StatefulSets, indexes of pods to target (if empty, random selection) | [] |
-| `count` | Integer | Number of pods to affect | 1 |
-| `interval` | String | For multiple pods, interval between failures | "10s" |
-
-#### Example
-
-```yaml
-apiVersion: chaos.havock8s.io/v1alpha1
-kind: havock8sExperiment
-metadata:
-  name: zookeeper-pod-failure
-spec:
-  target:
-    selector:
-      app: zookeeper
-  chaosType: PodFailure
-  duration: 5m
-  parameters:
-    failureType: Kill
-    podIndexes: [0, 2]  # Target first and third pods in the StatefulSet
-```
-
-<h3 id="resourcepressure">ResourcePressure</h3>
-
-Creates CPU, memory, or disk pressure on stateful workloads.
-
-#### Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `resourceType` | String | Type of resource pressure: `CPU`, `Memory`, `Disk` | `CPU` |
-| `intensity` | Float | Percentage of resource to consume (0.0-1.0) | 0.8 |
-| `workers` | Integer | Number of worker processes to create pressure | 1 |
-| `path` | String | For disk pressure, path to fill | "/data" |
-
-#### Example
-
-```yaml
-apiVersion: chaos.havock8s.io/v1alpha1
-kind: havock8sExperiment
-metadata:
-  name: elasticsearch-memory-pressure
-spec:
-  target:
-    selector:
-      app: elasticsearch
-  chaosType: ResourcePressure
-  duration: 8m
-  parameters:
-    resourceType: Memory
-    intensity: 0.7
-    workers: 2
-```
-
-<h3 id="datacorruption">DataCorruption</h3>
-
-Simulates data corruption scenarios in persistent volumes or databases.
-
-#### Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `corruptionType` | String | Type of corruption: `BitFlip`, `Truncate`, `Append`, `Replace` | `BitFlip` |
-| `path` | String | Path to target files | "/data" |
-| `filePattern` | String | Pattern of files to corrupt | "*.db" |
-| `percentage` | Float | Percentage of matching files to corrupt (0.0-1.0) | 0.1 |
-| `bytes` | Integer | Number of bytes to corrupt | 1 |
-
-#### Example
-
-```yaml
-apiVersion: chaos.havock8s.io/v1alpha1
-kind: havock8sExperiment
-metadata:
-  name: mongodb-data-corruption
-spec:
-  target:
-    selector:
-      app: mongodb
-  chaosType: DataCorruption
-  duration: 1m  # Short duration as this is destructive
-  parameters:
-    corruptionType: BitFlip
-    path: "/data/db"
-    filePattern: "*.wt"
-    percentage: 0.05
-    bytes: 2
-  safety:
-    autoRollback: true
-```
-
-## Safety Considerations
-
-When running chaos experiments, especially those targeting stateful applications, it's important to implement proper safety measures:
-
-<div class="warning">
-  <strong>Warning:</strong> Some chaos types like DataCorruption can cause permanent data loss if not properly configured with safety mechanisms.
+  paths: ["/data", "/var/lib/postgresql/data"]</code></pre>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>VolumeFailure</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Simulates Kubernetes persistent volume failures, including unmounting, permissions issues, or capacity problems.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>failureType</strong>: unmount, permission, or capacity</li>
+        <li><strong>duration</strong>: How long the failure persists</li>
+        <li><strong>volumeClaimNames</strong>: Target PVCs (optional)</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
+  chaosType: VolumeFailure
+  failureType: unmount
+  duration: 2m
+  volumeClaimNames: ["postgres-data"]</code></pre>
+    </div>
+  </div>
 </div>
 
-Always use the safety parameters in your experiments:
+### Network Chaos
 
-```yaml
-safety:
-  autoRollback: true  # Automatically roll back if health checks fail
-  healthChecks:
-    - type: httpGet
-      path: /health
-      port: 8080
-      failureThreshold: 3
-  maxTargetPods: 1  # Limit the number of pods affected
-  targetPercentage: 30  # Only target 30% of eligible pods
-```
+<div class="docs-section">
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>NetworkPartition</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Creates network partitions between stateful components, simulating network splits in distributed systems.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>direction</strong>: ingress, egress, or both</li>
+        <li><strong>targetLabels</strong>: Labels of pods to partition</li>
+        <li><strong>duration</strong>: How long the partition lasts</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
+  chaosType: NetworkPartition
+  direction: both
+  targetLabels:
+    role: "master"
+  duration: 5m</code></pre>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>NetworkLatency</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Introduces latency into network connections between stateful components or between apps and databases.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>latency</strong>: Added network latency (e.g., "100ms")</li>
+        <li><strong>jitter</strong>: Variation in latency (e.g., "20ms")</li>
+        <li><strong>correlation</strong>: 0-100% correlation between packets</li>
+        <li><strong>ports</strong>: Target ports (optional)</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
+  chaosType: NetworkLatency
+  latency: "200ms"
+  jitter: "50ms"
+  correlation: 80
+  ports: [5432, 6379]</code></pre>
+    </div>
+  </div>
+</div>
+
+### State Corruption Chaos
+
+<div class="docs-section">
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>DataCorruption</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Simulates data corruption in databases or other stateful components to test data integrity mechanisms.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>corruptionType</strong>: byte, schema, or record</li>
+        <li><strong>target</strong>: Specific files or database objects</li>
+        <li><strong>percentage</strong>: Amount of data to corrupt (0-100%)</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
+  chaosType: DataCorruption
+  corruptionType: record
+  target: "users_table"
+  percentage: 5</code></pre>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>StateDelay</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Introduces delays in state synchronization between replicas to test convergence behavior.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>delay</strong>: Time to delay state propagation</li>
+        <li><strong>replicaSelector</strong>: Which replicas to affect</li>
+        <li><strong>stateOperations</strong>: Types of operations to delay</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
+  chaosType: StateDelay
+  delay: "30s"
+  stateOperations: ["write", "sync"]
+  replicaSelector:
+    role: "slave"</code></pre>
+    </div>
+  </div>
+</div>
+
+### Resource Chaos
+
+<div class="docs-section">
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>ResourcePressure</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Induces CPU, memory, or IO pressure on stateful components to test performance degradation scenarios.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>resourceType</strong>: cpu, memory, or io</li>
+        <li><strong>intensity</strong>: 0-100% of resource to consume</li>
+        <li><strong>duration</strong>: How long to apply the pressure</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
+  chaosType: ResourcePressure
+  resourceType: memory
+  intensity: 80
+  duration: "10m"</code></pre>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>ConnectionOverload</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Simulates too many connections to stateful services like databases to test connection pooling and limits.</p>
+      <h4>Parameters:</h4>
+      <ul>
+        <li><strong>connectionCount</strong>: Number of connections to create</li>
+        <li><strong>connectionType</strong>: idle, active, or mixed</li>
+        <li><strong>port</strong>: Target port number</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code>spec:
+  chaosType: ConnectionOverload
+  connectionCount: 1000
+  connectionType: mixed
+  port: 5432</code></pre>
+    </div>
+  </div>
+</div>
 
 ## Creating Custom Chaos Types
 
-Havock8s is designed to be extensible. See the [Developer Guide](developer-guide.html) for instructions on creating custom chaos types for your specific stateful application needs. 
+Havock8s is extensible - you can create custom chaos types for your specific needs:
+
+<div class="callout callout-tip">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+    Custom Extensions
+  </div>
+  <p>Refer to our <a href="developer-guide.html">Developer Guide</a> for detailed instructions on creating custom chaos type plugins.</p>
+</div>
+
+## Designing Effective Chaos Experiments
+
+When designing chaos experiments, follow these best practices:
+
+1. **Start small** - Begin with low intensity values and short durations
+2. **Increase gradually** - Slowly increase the chaos intensity to find breaking points
+3. **Monitor carefully** - Always have monitoring in place when running experiments
+4. **Focus on recovery** - The goal is to understand and improve recovery mechanisms
+5. **Document findings** - Capture all findings and improvements from each experiment
+
+## Next Steps
+
+- [See detailed examples in our Tutorials](tutorials.html)
+- [Consult the API Reference](api-reference.html) for detailed parameter information
+- [Learn how to combine multiple chaos types](developer-guide.html#combining-chaos-types) 

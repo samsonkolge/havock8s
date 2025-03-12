@@ -1,0 +1,84 @@
+---
+layout: default
+---
+
+<div class="article-header">
+  <a href="{{ '/' | relative_url }}" class="back-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Back to Home
+  </a>
+  <h1>{{ page.title }}</h1>
+  <div class="article-metadata">
+    <span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      Last updated: {{ site.time | date: '%B %d, %Y' }}
+    </span>
+  </div>
+</div>
+
+{% if page.toc != false %}
+<div class="article-toc">
+  <h4>Table of Contents</h4>
+  <ul id="toc"></ul>
+</div>
+{% endif %}
+
+<div class="article-content">
+  {{ content }}
+</div>
+
+<div class="page-navigation">
+  {% if page.prev_page %}
+    <a href="{{ page.prev_page | relative_url }}" class="prev-page">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <span class="page-title">Previous: {{ page.prev_title }}</span>
+    </a>
+  {% else %}
+    <div></div>
+  {% endif %}
+
+  {% if page.next_page %}
+    <a href="{{ page.next_page | relative_url }}" class="next-page">
+      <span class="page-title">Next: {{ page.next_title }}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </a>
+  {% else %}
+    <div></div>
+  {% endif %}
+</div>
+
+<script>
+  // Simple table of contents generator
+  document.addEventListener('DOMContentLoaded', function() {
+    const headings = document.querySelectorAll('.article-content h2, .article-content h3');
+    const toc = document.getElementById('toc');
+    
+    if (headings.length > 0 && toc) {
+      headings.forEach(function(heading, index) {
+        // Create an ID for the heading if it doesn't have one
+        if (!heading.id) {
+          heading.id = 'heading-' + index;
+        }
+        
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#' + heading.id;
+        link.textContent = heading.textContent;
+        
+        // Add indentation for h3
+        if (heading.tagName.toLowerCase() === 'h3') {
+          listItem.style.marginLeft = '1.5rem';
+        }
+        
+        listItem.appendChild(link);
+        toc.appendChild(listItem);
+      });
+    } else if (toc) {
+      // Hide table of contents if there are no headings
+      const tocContainer = document.querySelector('.article-toc');
+      if (tocContainer) {
+        tocContainer.style.display = 'none';
+      }
+    }
+  });
+</script> 

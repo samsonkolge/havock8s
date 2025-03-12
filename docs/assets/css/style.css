@@ -552,4 +552,127 @@ tbody tr:hover {
     text-align: left;
     margin-top: 1rem;
   }
+}
+
+/* Back button */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--background-light);
+  color: var(--text-color);
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid var(--border-color);
+}
+
+.back-button:hover {
+  background-color: var(--border-color);
+  text-decoration: none;
+  transform: translateX(-3px);
+}
+
+.back-button svg {
+  margin-right: 0.5rem;
+}
+
+/* Page navigation */
+.page-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.page-navigation a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--background-light);
+  color: var(--text-color);
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid var(--border-color);
+  max-width: 45%;
+}
+
+.page-navigation a:hover {
+  background-color: var(--border-color);
+  text-decoration: none;
+}
+
+.page-navigation .prev-page svg {
+  margin-right: 0.5rem;
+}
+
+.page-navigation .next-page {
+  text-align: right;
+}
+
+.page-navigation .next-page svg {
+  margin-left: 0.5rem;
+}
+
+.page-navigation .page-title {
+  display: block;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Article styling */
+.article-header {
+  margin-bottom: 2rem;
+}
+
+.article-header h1 {
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+}
+
+.article-metadata {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-metadata span {
+  margin-right: 1rem;
+}
+
+.article-toc {
+  background-color: var(--background-light);
+  padding: 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+}
+
+.article-toc h4 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.article-toc ul {
+  padding-left: 1.5rem;
+  margin-bottom: 0;
+}
+
+.article-toc li {
+  margin-bottom: 0.5rem;
+}
+
+.article-section {
+  margin-bottom: 3rem;
+}
+
+.article-section:last-child {
+  margin-bottom: 0;
 } 
