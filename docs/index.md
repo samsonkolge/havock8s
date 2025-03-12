@@ -1,8 +1,26 @@
-# havock8s
+---
+layout: default
+title: Havock8s Documentation
+---
 
-havock8s is a cloud-native chaos engineering framework specifically designed for stateful applications running on Kubernetes. While many existing chaos engineering tools focus on stateless microservices, havock8s specializes in testing and enhancing the resilience of stateful components such as databases, caching systems, and persistent storage.
+# Havock8s
 
-## Features
+![Havock8s Logo](assets/images/logo.png)
+
+Havock8s is a cloud-native chaos engineering framework specifically designed for stateful applications running on Kubernetes. While many existing chaos engineering tools focus on stateless microservices, Havock8s specializes in testing and enhancing the resilience of stateful components such as databases, caching systems, and persistent storage.
+
+## Why Havock8s?
+
+Traditional chaos engineering tools often focus on stateless services where instances can be easily replaced. However, stateful applications present unique challenges:
+
+- Data persistence requirements
+- Complex recovery procedures
+- State synchronization across replicas
+- Storage dependencies
+
+Havock8s addresses these challenges with targeted chaos experiments designed specifically for stateful workloads.
+
+## Key Features
 
 ### Customizable Failure Scenarios
 - Pre-defined chaos scenarios for stateful workloads (disk I/O failures, database connection issues, persistent volume disruptions)
@@ -26,11 +44,32 @@ havock8s is a cloud-native chaos engineering framework specifically designed for
 
 ## Documentation
 
-- [Getting Started](getting-started.md)
-- [Installation Guide](installation.md)
-- [Developer Guide](developer-guide.md)
-- [API Reference](api-reference.md)
-- [Examples](../examples/README.md)
+<div class="docs-section">
+  <div class="docs-card">
+    <h3><a href="getting-started.html">Getting Started</a></h3>
+    <p>Quick introduction to Havock8s with setup instructions</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="installation.html">Installation Guide</a></h3>
+    <p>Detailed installation instructions for different environments</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="chaos-types.html">Chaos Types</a></h3>
+    <p>Overview of available chaos scenarios and their parameters</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="api-reference.html">API Reference</a></h3>
+    <p>Complete reference of all API objects and their fields</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="developer-guide.html">Developer Guide</a></h3>
+    <p>Instructions for developers who want to contribute or extend</p>
+  </div>
+  <div class="docs-card">
+    <h3><a href="tutorials.html">Tutorials</a></h3>
+    <p>Step-by-step guides for common use cases</p>
+  </div>
+</div>
 
 ## Quick Start
 
@@ -55,4 +94,14 @@ spec:
         path: /health
         port: 8080
         failureThreshold: 3
-``` 
+```
+
+## Community
+
+- [GitHub Issues](https://github.com/havock8s/havock8s/issues)
+- [Slack Channel](#)
+- [Twitter](https://twitter.com/havock8s)
+
+## License
+
+Havock8s is open-source software licensed under the Apache License 2.0. 
