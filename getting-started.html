@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started with Havock8s - Havock8s</title>
+  <link rel="stylesheet" href="/havock8s/assets/css/style.css">
+  <link rel="icon" href="/havock8s/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/havock8s/assets/images/favicon.png" type="image/png">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Getting Started with Havock8s | Havock8s</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Getting Started with Havock8s" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<meta property="og:description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<link rel="canonical" href="https://samsonkolge.github.io/havock8s/getting-started.html" />
+<meta property="og:url" content="https://samsonkolge.github.io/havock8s/getting-started.html" />
+<meta property="og:site_name" content="Havock8s" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Getting Started with Havock8s" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A cloud-native chaos engineering framework for stateful applications on Kubernetes","headline":"Getting Started with Havock8s","url":"https://samsonkolge.github.io/havock8s/getting-started.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-name">Havock8s</h1>
+      <p class="site-description">A cloud-native chaos engineering framework for stateful applications on Kubernetes</p>
+      <div class="site-actions">
+        <a href="https://github.com/samsonkolge/havock8s" class="site-cta">View on GitHub</a>
+        <a href="/havock8s/getting-started.html" class="site-cta site-cta-secondary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container nav-container">
+      <div class="nav-logo">
+        <a href="/havock8s/">
+          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#4a6bdc" />
+            <ellipse cx="16" cy="11" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="11" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="16" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="16" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="21" rx="5" ry="2" fill="#ffab3c" />
+            <path d="M14,8 L12,16 L16,14 L14,24" stroke="white" stroke-width="1.5" fill="none" />
+            <path d="M20,8 L22,16 L18,14 L20,24" stroke="#3ce7b9" stroke-width="1.5" fill="none" />
+          </svg>
+          <span>Havock8s</span>
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/havock8s/" >Home</a></li>
+        <li><a href="/havock8s/getting-started.html" class="active">Getting Started</a></li>
+        <li><a href="/havock8s/installation.html" >Installation</a></li>
+        <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
+        <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+        <li><a href="/havock8s/tutorials.html" >Tutorials</a></li>
+      </ul>
+      <div class="nav-right">
+        <div class="search-box">
+          <input type="text" class="search-input" placeholder="Search docs...">
+          <span class="search-icon">🔍</span>
+        </div>
+        <a href="https://github.com/samsonkolge/havock8s" class="github-link" title="View on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="content-area">
+        <div class="article-header">
+  <a href="/havock8s/" class="back-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Back to Home
+  </a>
+  <h1>Getting Started with Havock8s</h1>
+  <div class="article-metadata">
+    <span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      Last updated: March 12, 2025
+    </span>
+  </div>
+</div>
+
+
+<div class="article-toc">
+  <h4>Table of Contents</h4>
+  <ul id="toc"></ul>
+</div>
+
+
+<div class="article-content">
+  <h1 id="getting-started-with-havock8s">Getting Started with Havock8s</h1>
+
+<div class="callout callout-info">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    Quick Start
+  </div>
+  <p>This guide will help you quickly get started with Havock8s, a cloud-native chaos engineering framework for stateful applications running on Kubernetes.</p>
+</div>
+
+<h2 id="what-is-havock8s">What is Havock8s?</h2>
+
+<p>Havock8s is specifically designed to help you test the resilience of stateful applications in Kubernetes environments. While many chaos engineering tools focus on stateless services, Havock8s specializes in testing applications that maintain state, such as:</p>
+
+<ul>
+  <li>Databases (PostgreSQL, MySQL, MongoDB, etc.)</li>
+  <li>Message queues and streaming platforms (Kafka, RabbitMQ)</li>
+  <li>Caching systems (Redis, Memcached)</li>
+  <li>Stateful applications with persistent storage requirements</li>
+</ul>
+
+<h2 id="why-chaos-engineering-for-stateful-applications">Why Chaos Engineering for Stateful Applications?</h2>
+
+<p>Stateful applications require special attention during chaos testing because:</p>
+
+<ol>
+  <li><strong>Data persistence is critical</strong> - Data loss can be catastrophic</li>
+  <li><strong>Recovery procedures are complex</strong> - Restoring state after failure can involve multiple steps</li>
+  <li><strong>State synchronization</strong> - Ensuring replicas maintain consistent state after disruptions</li>
+  <li><strong>Storage dependencies</strong> - Interaction with storage systems adds another failure point</li>
+</ol>
+
+<p>Havock8s provides targeted chaos experiments that safely test these specific challenges.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you begin, ensure you have:</p>
+
+<div class="article-section">
+  <ul>
+    <li>A Kubernetes cluster (v1.18+)</li>
+    <li>kubectl configured to communicate with your cluster</li>
+    <li>Helm v3 (optional, for chart-based installation)</li>
+    <li>A test environment that resembles your production environment</li>
+  </ul>
+</div>
+
+<h2 id="quick-installation">Quick Installation</h2>
+
+<p>You can install Havock8s using either kubectl or Helm:</p>
+
+<h3 id="using-kubectl">Using kubectl</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> https://raw.githubusercontent.com/havock8s/havock8s/main/config/install.yaml
+</code></pre></div></div>
+
+<h3 id="using-helm">Using Helm</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm repo add havock8s https://havock8s.github.io/charts
+helm <span class="nb">install </span>havock8s havock8s/havock8s
+</code></pre></div></div>
+
+<p>For more detailed installation instructions, including configuration options and advanced setups, visit our <a href="installation.html">Installation Guide</a>.</p>
+
+<h2 id="verifying-the-installation">Verifying the Installation</h2>
+
+<p>After installation, verify that the Havock8s controller is running properly:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl get pods <span class="nt">-n</span> havock8s-system
+</code></pre></div></div>
+
+<p>You should see output similar to:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NAME                                        READY   STATUS    RESTARTS   AGE
+havock8s-controller-manager-xxxx-yyyy       1/1     Running   0          1m
+</code></pre></div></div>
+
+<h2 id="your-first-chaos-experiment">Your First Chaos Experiment</h2>
+
+<p>Let’s create a simple chaos experiment that simulates disk I/O failures for a PostgreSQL database:</p>
+
+<div class="callout callout-warning">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    Important
+  </div>
+  <p>Always run chaos experiments in a test environment first before trying them in production.</p>
+</div>
+
+<h3 id="1-create-the-experiment-definition">1. Create the Experiment Definition</h3>
+
+<p>Create a file named <code class="language-plaintext highlighter-rouge">postgres-disk-failure.yaml</code> with the following content:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">chaos.havock8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">havock8sExperiment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres-disk-failure</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">target</span><span class="pi">:</span>
+    <span class="na">selector</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">chaosType</span><span class="pi">:</span> <span class="s">DiskFailure</span>
+  <span class="na">duration</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">intensity</span><span class="pi">:</span> <span class="m">0.3</span>  <span class="c1"># 30% of I/O operations will fail</span>
+  <span class="na">safety</span><span class="pi">:</span>
+    <span class="na">autoRollback</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">healthChecks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">httpGet</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">/health</span>
+        <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+        <span class="na">failureThreshold</span><span class="pi">:</span> <span class="m">3</span>
+</code></pre></div></div>
+
+<h3 id="2-apply-the-experiment">2. Apply the Experiment</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> postgres-disk-failure.yaml
+</code></pre></div></div>
+
+<h3 id="3-monitor-the-experiment">3. Monitor the Experiment</h3>
+
+<p>Track the status of your experiment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl get havock8sexperiments
+</code></pre></div></div>
+
+<h3 id="4-view-detailed-results">4. View Detailed Results</h3>
+
+<p>Get detailed information about your experiment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl describe havock8sexperiment postgres-disk-failure
+</code></pre></div></div>
+
+<h2 id="understanding-the-results">Understanding the Results</h2>
+
+<p>When your chaos experiment completes, you’ll see results that help you understand how your application behaved during the failure scenario:</p>
+
+<ul>
+  <li><strong>Recovery Time</strong>: How long it took your system to recover after the chaos was stopped</li>
+  <li><strong>Error Rate</strong>: Any increase in error rates during the chaos period</li>
+  <li><strong>Performance Impact</strong>: Changes in latency or throughput</li>
+  <li><strong>Failure Modes</strong>: Specific ways your application failed or degraded during chaos</li>
+</ul>
+
+<p>These metrics help you identify resilience gaps in your stateful applications.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you’ve run your first experiment, explore these resources to deepen your Havock8s expertise:</p>
+
+<div class="docs-section">
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Explore Chaos Types</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Discover the different types of chaos experiments available in Havock8s</p>
+      <a href="chaos-types.html">View Chaos Types →</a>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Follow Tutorials</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Step-by-step guides for common chaos testing scenarios</p>
+      <a href="tutorials.html">Explore Tutorials →</a>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>API Reference</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Detailed documentation of the Havock8s API</p>
+      <a href="api-reference.html">View API Reference →</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="page-navigation">
+  
+    <div></div>
+  
+
+  
+    <a href="/havock8s/installation.html" class="next-page">
+      <span class="page-title">Next: Installation Guide</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </a>
+  
+</div>
+
+<script>
+  // Simple table of contents generator
+  document.addEventListener('DOMContentLoaded', function() {
+    const headings = document.querySelectorAll('.article-content h2, .article-content h3');
+    const toc = document.getElementById('toc');
+    
+    if (headings.length > 0 && toc) {
+      headings.forEach(function(heading, index) {
+        // Create an ID for the heading if it doesn't have one
+        if (!heading.id) {
+          heading.id = 'heading-' + index;
+        }
+        
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#' + heading.id;
+        link.textContent = heading.textContent;
+        
+        // Add indentation for h3
+        if (heading.tagName.toLowerCase() === 'h3') {
+          listItem.style.marginLeft = '1.5rem';
+        }
+        
+        listItem.appendChild(link);
+        toc.appendChild(listItem);
+      });
+    } else if (toc) {
+      // Hide table of contents if there are no headings
+      const tocContainer = document.querySelector('.article-toc');
+      if (tocContainer) {
+        tocContainer.style.display = 'none';
+      }
+    }
+  });
+</script> 
+      </div>
+      
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Documentation</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/" >Overview</a></li>
+            <li><a href="/havock8s/getting-started.html" class="active">Getting Started</a></li>
+            <li><a href="/havock8s/installation.html" >Installation</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Concepts</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
+            <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Learn</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/tutorials.html" >Tutorials</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/tree/master/examples">Examples</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Contribute</h4>
+          <ul class="sidebar-links">
+            <li><a href="https://github.com/samsonkolge/havock8s/blob/master/CONTRIBUTING.md">How to Contribute</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/issues">Report an Issue</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/blob/master/docs/developer-guide.html">Developer Guide</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-info">
+        <ul class="footer-links">
+          <li><a href="https://github.com/samsonkolge/havock8s">GitHub</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/blob/master/LICENSE">License</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/releases">Releases</a></li>
+        </ul>
+      </div>
+      <div class="footer-copyright">
+        <p>Havock8s is maintained by the Havock8s team.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script for simple search functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.search-input');
+      
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const query = searchInput.value.trim();
+          if (query) {
+            window.location.href = `https://github.com/search?q=${encodeURIComponent(query)}+repo:${encodeURIComponent('samsonkolge/havock8s')}+extension:md+path:docs`;
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

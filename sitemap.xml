@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://samsonkolge.github.io/havock8s/api-reference.html</loc>
+</url>
+<url>
 <loc>https://samsonkolge.github.io/havock8s/chaos-types.html</loc>
 </url>
 <url>
+<loc>https://samsonkolge.github.io/havock8s/getting-started.html</loc>
+</url>
+<url>
 <loc>https://samsonkolge.github.io/havock8s/</loc>
+</url>
+<url>
+<loc>https://samsonkolge.github.io/havock8s/installation.html</loc>
 </url>
 <url>
 <loc>https://samsonkolge.github.io/havock8s/tutorials.html</loc>
 </url>
 <url>
 <loc>https://samsonkolge.github.io/havock8s/assets/images/logo-svg.html</loc>
-<lastmod>2025-03-12T09:47:03+00:00</lastmod>
+<lastmod>2025-03-12T10:05:37+00:00</lastmod>
 </url>
 </urlset>

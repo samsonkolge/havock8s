@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation Guide - Havock8s</title>
+  <link rel="stylesheet" href="/havock8s/assets/css/style.css">
+  <link rel="icon" href="/havock8s/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/havock8s/assets/images/favicon.png" type="image/png">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Installation Guide | Havock8s</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Installation Guide" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<meta property="og:description" content="A cloud-native chaos engineering framework for stateful applications on Kubernetes" />
+<link rel="canonical" href="https://samsonkolge.github.io/havock8s/installation.html" />
+<meta property="og:url" content="https://samsonkolge.github.io/havock8s/installation.html" />
+<meta property="og:site_name" content="Havock8s" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Installation Guide" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A cloud-native chaos engineering framework for stateful applications on Kubernetes","headline":"Installation Guide","url":"https://samsonkolge.github.io/havock8s/installation.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-name">Havock8s</h1>
+      <p class="site-description">A cloud-native chaos engineering framework for stateful applications on Kubernetes</p>
+      <div class="site-actions">
+        <a href="https://github.com/samsonkolge/havock8s" class="site-cta">View on GitHub</a>
+        <a href="/havock8s/getting-started.html" class="site-cta site-cta-secondary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container nav-container">
+      <div class="nav-logo">
+        <a href="/havock8s/">
+          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#4a6bdc" />
+            <ellipse cx="16" cy="11" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="11" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="16" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="16" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="21" rx="5" ry="2" fill="#ffab3c" />
+            <path d="M14,8 L12,16 L16,14 L14,24" stroke="white" stroke-width="1.5" fill="none" />
+            <path d="M20,8 L22,16 L18,14 L20,24" stroke="#3ce7b9" stroke-width="1.5" fill="none" />
+          </svg>
+          <span>Havock8s</span>
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/havock8s/" >Home</a></li>
+        <li><a href="/havock8s/getting-started.html" >Getting Started</a></li>
+        <li><a href="/havock8s/installation.html" class="active">Installation</a></li>
+        <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
+        <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+        <li><a href="/havock8s/tutorials.html" >Tutorials</a></li>
+      </ul>
+      <div class="nav-right">
+        <div class="search-box">
+          <input type="text" class="search-input" placeholder="Search docs...">
+          <span class="search-icon">🔍</span>
+        </div>
+        <a href="https://github.com/samsonkolge/havock8s" class="github-link" title="View on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="content-area">
+        <div class="article-header">
+  <a href="/havock8s/" class="back-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Back to Home
+  </a>
+  <h1>Installation Guide</h1>
+  <div class="article-metadata">
+    <span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      Last updated: March 12, 2025
+    </span>
+  </div>
+</div>
+
+
+<div class="article-toc">
+  <h4>Table of Contents</h4>
+  <ul id="toc"></ul>
+</div>
+
+
+<div class="article-content">
+  <h1 id="installation-guide">Installation Guide</h1>
+
+<div class="callout callout-info">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    Installation Options
+  </div>
+  <p>This guide provides detailed instructions for installing Havock8s in your Kubernetes cluster using multiple methods.</p>
+</div>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before installing Havock8s, ensure your environment meets these requirements:</p>
+
+<div class="article-section">
+  <ul>
+    <li><strong>Kubernetes cluster</strong> - version 1.18 or higher</li>
+    <li><strong>kubectl</strong> - configured to communicate with your cluster</li>
+    <li><strong>Helm v3</strong> - (optional) for chart-based installation</li>
+    <li><strong>Cluster admin access</strong> - required for creating CRDs and RBAC roles</li>
+  </ul>
+</div>
+
+<h2 id="installation-methods">Installation Methods</h2>
+
+<p>Havock8s can be installed using several methods. Choose the one that best fits your workflow and requirements.</p>
+
+<h3 id="method-1-using-kubectl">Method 1: Using kubectl</h3>
+
+<p>This is the simplest method to quickly install Havock8s:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> https://raw.githubusercontent.com/havock8s/havock8s/main/config/install.yaml
+</code></pre></div></div>
+
+<p>When you run this command, the following resources will be created:</p>
+
+<ol>
+  <li><strong>Custom Resource Definitions (CRDs)</strong> - Define the chaos experiments</li>
+  <li><strong>RBAC Resources</strong> - Service accounts, roles, and role bindings</li>
+  <li><strong>Deployments</strong> - The Havock8s controller manager</li>
+  <li><strong>Services</strong> - For monitoring and metrics</li>
+</ol>
+
+<h3 id="method-2-using-helm">Method 2: Using Helm</h3>
+
+<p>For more flexibility, easier upgrades, and configuration management, Helm is recommended:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Add the Havock8s Helm repository</span>
+helm repo add havock8s https://havock8s.github.io/charts
+
+<span class="c"># Update your Helm repositories</span>
+helm repo update
+
+<span class="c"># Install Havock8s</span>
+helm <span class="nb">install </span>havock8s havock8s/havock8s
+</code></pre></div></div>
+
+<h4 id="customizing-the-helm-installation">Customizing the Helm Installation</h4>
+
+<p>Havock8s’s Helm chart offers extensive customization options. Create a <code class="language-plaintext highlighter-rouge">values.yaml</code> file:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="c1"># Resource limits and requests</span>
+  <span class="na">resources</span><span class="pi">:</span>
+    <span class="na">limits</span><span class="pi">:</span>
+      <span class="na">cpu</span><span class="pi">:</span> <span class="s">500m</span>
+      <span class="na">memory</span><span class="pi">:</span> <span class="s">512Mi</span>
+    <span class="na">requests</span><span class="pi">:</span>
+      <span class="na">cpu</span><span class="pi">:</span> <span class="s">100m</span>
+      <span class="na">memory</span><span class="pi">:</span> <span class="s">128Mi</span>
+  
+  <span class="c1"># Controller settings</span>
+  <span class="na">logLevel</span><span class="pi">:</span> <span class="s">info</span>
+  <span class="na">replicaCount</span><span class="pi">:</span> <span class="m">1</span>
+
+<span class="c1"># Integration with monitoring systems</span>
+<span class="na">monitoring</span><span class="pi">:</span>
+  <span class="na">prometheus</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">serviceMonitor</span><span class="pi">:</span>
+      <span class="na">enabled</span><span class="pi">:</span> <span class="kc">true</span>
+  
+<span class="c1"># Distributed tracing</span>
+<span class="na">tracing</span><span class="pi">:</span>
+  <span class="na">opentelemetry</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">endpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">otel-collector:4317"</span>
+
+<span class="c1"># Security settings</span>
+<span class="na">security</span><span class="pi">:</span>
+  <span class="na">podSecurityContext</span><span class="pi">:</span>
+    <span class="na">runAsNonRoot</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">runAsUser</span><span class="pi">:</span> <span class="m">1000</span>
+  <span class="na">containerSecurityContext</span><span class="pi">:</span>
+    <span class="na">allowPrivilegeEscalation</span><span class="pi">:</span> <span class="kc">false</span>
+</code></pre></div></div>
+
+<p>Install with your custom values:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm <span class="nb">install </span>havock8s havock8s/havock8s <span class="nt">-f</span> values.yaml
+</code></pre></div></div>
+
+<div class="callout callout-tip">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+    Helm Pro Tip
+  </div>
+  <p>For production deployments, always create a dedicated values file with your customizations. This makes upgrades and configuration tracking much easier.</p>
+</div>
+
+<h3 id="method-3-building-from-source">Method 3: Building from Source</h3>
+
+<p>For development, customization, or contributing to Havock8s:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Clone the repository</span>
+git clone https://github.com/havock8s/havock8s.git
+<span class="nb">cd </span>havock8s
+
+<span class="c"># Build the controller</span>
+make build
+
+<span class="c"># Deploy to the cluster</span>
+make deploy
+</code></pre></div></div>
+
+<p>This method requires:</p>
+<ul>
+  <li>Go 1.17+</li>
+  <li>Docker or compatible container runtime</li>
+  <li>Access to push images to a container registry</li>
+</ul>
+
+<h2 id="verification-and-troubleshooting">Verification and Troubleshooting</h2>
+
+<h3 id="verifying-the-installation">Verifying the Installation</h3>
+
+<p>After installation, verify that all components are running properly:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check controller pod status</span>
+kubectl get pods <span class="nt">-n</span> havock8s-system
+</code></pre></div></div>
+
+<p>You should see output similar to:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NAME                                        READY   STATUS    RESTARTS   AGE
+havock8s-controller-manager-xxxx-yyyy       1/1     Running   0          1m
+</code></pre></div></div>
+
+<p>Verify the Custom Resource Definitions are installed:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl get crds | <span class="nb">grep </span>havock8s
+</code></pre></div></div>
+
+<p>Expected output:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>havock8sexperiments.chaos.havock8s.io
+</code></pre></div></div>
+
+<h3 id="common-installation-issues">Common Installation Issues</h3>
+
+<div class="article-section">
+  <h4>Controller Pod Not Starting</h4>
+  <p>If the controller pod isn't starting, check the pod logs:</p>
+  <pre><code>kubectl logs -n havock8s-system deploy/havock8s-controller-manager</code></pre>
+  
+  <h4>CRDs Not Being Created</h4>
+  <p>Ensure you have cluster-admin privileges to create CRDs:</p>
+  <pre><code>kubectl auth can-i create crds</code></pre>
+  
+  <h4>Webhook Configuration Issues</h4>
+  <p>If you're using webhooks, check that the certificates are correctly set up:</p>
+  <pre><code>kubectl get validatingwebhookconfiguration -l app=havock8s</code></pre>
+</div>
+
+<h2 id="uninstalling">Uninstalling</h2>
+
+<h3 id="using-kubectl">Using kubectl</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl delete <span class="nt">-f</span> https://raw.githubusercontent.com/havock8s/havock8s/main/config/install.yaml
+</code></pre></div></div>
+
+<h3 id="using-helm">Using Helm</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm uninstall havock8s
+</code></pre></div></div>
+
+<h3 id="manual-cleanup-if-needed">Manual Cleanup (if needed)</h3>
+
+<p>If some resources remain after uninstallation:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Remove CRDs</span>
+kubectl delete crd havock8sexperiments.chaos.havock8s.io
+
+<span class="c"># Remove namespace</span>
+kubectl delete namespace havock8s-system
+
+<span class="c"># Remove RBAC resources</span>
+kubectl delete clusterrole havock8s-manager-role
+kubectl delete clusterrolebinding havock8s-manager-rolebinding
+</code></pre></div></div>
+
+<h2 id="configurations-for-different-environments">Configurations for Different Environments</h2>
+
+<div class="docs-section">
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Development</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>For development or testing, use minimal resources:</p>
+      <pre><code>helm install havock8s havock8s/havock8s \
+  --set controller.resources.requests.cpu=50m \
+  --set controller.resources.requests.memory=64Mi</code></pre>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Production</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>For production, enable high availability and monitoring:</p>
+      <pre><code>helm install havock8s havock8s/havock8s \
+  --set controller.replicaCount=2 \
+  --set monitoring.prometheus.enabled=true</code></pre>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Restricted Environments</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>For environments with strict security policies:</p>
+      <pre><code>helm install havock8s havock8s/havock8s \
+  --set security.podSecurityContext.runAsNonRoot=true \
+  --set security.containerSecurityContext.readOnlyRootFilesystem=true</code></pre>
+    </div>
+  </div>
+</div>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you have Havock8s installed, you can:</p>
+
+<ul>
+  <li><a href="getting-started.html">Get started with your first chaos experiment</a></li>
+  <li><a href="chaos-types.html">Learn about different chaos types</a></li>
+  <li><a href="tutorials.html">Explore tutorials for common scenarios</a></li>
+</ul>
+
+</div>
+
+<div class="page-navigation">
+  
+    <a href="/havock8s/getting-started.html" class="prev-page">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <span class="page-title">Previous: Getting Started</span>
+    </a>
+  
+
+  
+    <a href="/havock8s/chaos-types.html" class="next-page">
+      <span class="page-title">Next: Chaos Types</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </a>
+  
+</div>
+
+<script>
+  // Simple table of contents generator
+  document.addEventListener('DOMContentLoaded', function() {
+    const headings = document.querySelectorAll('.article-content h2, .article-content h3');
+    const toc = document.getElementById('toc');
+    
+    if (headings.length > 0 && toc) {
+      headings.forEach(function(heading, index) {
+        // Create an ID for the heading if it doesn't have one
+        if (!heading.id) {
+          heading.id = 'heading-' + index;
+        }
+        
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#' + heading.id;
+        link.textContent = heading.textContent;
+        
+        // Add indentation for h3
+        if (heading.tagName.toLowerCase() === 'h3') {
+          listItem.style.marginLeft = '1.5rem';
+        }
+        
+        listItem.appendChild(link);
+        toc.appendChild(listItem);
+      });
+    } else if (toc) {
+      // Hide table of contents if there are no headings
+      const tocContainer = document.querySelector('.article-toc');
+      if (tocContainer) {
+        tocContainer.style.display = 'none';
+      }
+    }
+  });
+</script> 
+      </div>
+      
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Documentation</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/" >Overview</a></li>
+            <li><a href="/havock8s/getting-started.html" >Getting Started</a></li>
+            <li><a href="/havock8s/installation.html" class="active">Installation</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Concepts</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
+            <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Learn</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/tutorials.html" >Tutorials</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/tree/master/examples">Examples</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Contribute</h4>
+          <ul class="sidebar-links">
+            <li><a href="https://github.com/samsonkolge/havock8s/blob/master/CONTRIBUTING.md">How to Contribute</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/issues">Report an Issue</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/blob/master/docs/developer-guide.html">Developer Guide</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-info">
+        <ul class="footer-links">
+          <li><a href="https://github.com/samsonkolge/havock8s">GitHub</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/blob/master/LICENSE">License</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/releases">Releases</a></li>
+        </ul>
+      </div>
+      <div class="footer-copyright">
+        <p>Havock8s is maintained by the Havock8s team.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script for simple search functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.search-input');
+      
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const query = searchInput.value.trim();
+          if (query) {
+            window.location.href = `https://github.com/search?q=${encodeURIComponent(query)}+repo:${encodeURIComponent('samsonkolge/havock8s')}+extension:md+path:docs`;
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
