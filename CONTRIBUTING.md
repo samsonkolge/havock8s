@@ -1,6 +1,56 @@
-# Contributing to StatefulChaos
+# Contributing to havock8s
 
-Thank you for your interest in contributing to StatefulChaos! This document provides guidelines and instructions for contributing to this project.
+We love your input! We want to make contributing to havock8s as easy and transparent as possible, whether it's:
+
+- Reporting a bug
+- Discussing the current state of the code
+- Submitting a fix
+- Proposing new features
+- Becoming a maintainer
+
+## Development Process
+
+We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
+
+### Pull Requests
+
+1. Fork the repository to your own GitHub account
+2. Clone the project to your machine
+3. Create a branch locally with a succinct but descriptive name
+4. Commit changes to the branch
+5. Follow any formatting and testing guidelines specific to this repo
+6. Push changes to your fork
+7. Open a PR in our repository and follow the PR template so that we can efficiently review the changes
+
+### Development Workflow
+
+Here's how you can set up your development environment:
+
+```bash
+# Clone your fork of the repo
+git clone https://github.com/YOUR_USERNAME/havock8s.git
+
+# Navigate to the newly cloned directory
+cd havock8s
+
+# Add the original repository as a remote called "upstream"
+git remote add upstream https://github.com/havock8s/havock8s.git
+
+# Get the latest changes from upstream
+git pull upstream main
+
+# Create a new topic branch
+git checkout -b my-feature-branch
+
+# Make your changes, add tests, and make sure the tests still pass
+make test
+
+# Commit your changes
+git commit -m "Descriptive commit message"
+
+# Push your changes to your fork
+git push origin my-feature-branch
+```
 
 ## Code of Conduct
 

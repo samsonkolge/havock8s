@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-logr/logr"
-	chaosv1alpha1 "github.com/statefulchaos/statefulchaos/api/v1alpha1"
+	chaosv1alpha1 "github.com/havock8s/havock8s/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"

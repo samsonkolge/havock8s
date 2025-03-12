@@ -4,8 +4,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// StatefulChaosExperimentSpec defines the desired state of a chaos experiment
-type StatefulChaosExperimentSpec struct {
+// havock8sExperimentSpec defines the desired state of a chaos experiment
+type havock8sExperimentSpec struct {
 	// Target defines the selection criteria for what to target with chaos
 	Target TargetSpec `json:"target"`
 
@@ -145,8 +145,8 @@ type ProtectionSpec struct {
 	Value string `json:"value"`
 }
 
-// StatefulChaosExperimentStatus defines the observed state of a chaos experiment
-type StatefulChaosExperimentStatus struct {
+// havock8sExperimentStatus defines the observed state of a chaos experiment
+type havock8sExperimentStatus struct {
 	// Phase of the chaos experiment (Pending, Running, Completed, Failed)
 	Phase string `json:"phase"`
 
@@ -198,25 +198,25 @@ type TargetResourceStatus struct {
 // +kubebuilder:printcolumn:name="Target",type="string",JSONPath=".spec.target.targetType",description="Target type"
 // +kubebuilder:printcolumn:name="Phase",type="string",JSONPath=".status.phase",description="Experiment phase"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:resource:shortName=h8s
 
-// StatefulChaosExperiment is the Schema for the chaos experiment API
-type StatefulChaosExperiment struct {
+// havock8sExperiment is the Schema for the chaosexperiments API
+type havock8sExperiment struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   StatefulChaosExperimentSpec   `json:"spec,omitempty"`
-	Status StatefulChaosExperimentStatus `json:"status,omitempty"`
+	Spec   havock8sExperimentSpec   `json:"spec,omitempty"`
+	Status havock8sExperimentStatus `json:"status,omitempty"`
 }
 
+// havock8sExperimentList contains a list of havock8sExperiment
 // +kubebuilder:object:root=true
-
-// StatefulChaosExperimentList contains a list of StatefulChaosExperiment
-type StatefulChaosExperimentList struct {
+type havock8sExperimentList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []StatefulChaosExperiment `json:"items"`
+	Items           []havock8sExperiment `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&StatefulChaosExperiment{}, &StatefulChaosExperimentList{})
+	SchemeBuilder.Register(&havock8sExperiment{}, &havock8sExperimentList{})
 }

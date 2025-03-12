@@ -1,233 +1,203 @@
-# StatefulChaos Developer Guide
+# Developer Guide
 
-This guide explains how to extend the StatefulChaos operator with new chaos types, enhance existing functionality, and contribute to the project.
+This guide provides information for developers who want to contribute to or extend havock8s.
 
 ## Architecture Overview
 
-StatefulChaos follows the Kubernetes Operator pattern with a controller-based architecture:
+havock8s follows the Kubernetes Operator pattern and is built using the Operator SDK and controller-runtime libraries. The main components are:
+
+1. **Custom Resource Definitions (CRDs)**: Define the havock8sExperiment resource
+2. **Controller**: Watches for havock8sExperiment resources and reconciles their state
+3. **Chaos Injectors**: Implement different types of chaos (disk failures, network latency, etc.)
+4. **Safety Mechanisms**: Ensure experiments don't cause cascading failures
+
+## Directory Structure
 
 ```
-┌─────────────────────────┐
-│   StatefulChaos CRD     │
-│ StatefulChaosExperiment │
-└───────────┬─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│ StatefulChaos Controller│
-└───────────┬─────────────┘
-            │
-      ┌─────┴─────┐
-      │           │
-      ▼           ▼
-┌──────────┐ ┌────────────────┐
-│ Injectors │ │ Safety Monitors│
-└──────────┘ └────────────────┘
+havock8s/
+├── api/                  # API definitions for CRDs
+│   └── v1alpha1/         # API version
+├── config/               # Kubernetes manifests
+├── controllers/          # Controller implementation
+├── docs/                 # Documentation
+├── examples/             # Example chaos experiments
+├── pkg/                  # Shared packages
+│   ├── chaos/            # Chaos injector implementations
+│   └── utils/            # Utility functions
+└── tests/                # Integration and end-to-end tests
 ```
 
-- **Custom Resource Definition (CRD)**: Defines the `StatefulChaosExperiment` resource
-- **Controller**: Reconciles the desired state with the actual state
-- **Injectors**: Implement various chaos types (disk failures, network latency, etc.)
-- **Safety Monitors**: Implement safety mechanisms to prevent cascading failures
+## Development Environment Setup
 
-## Adding a New Chaos Type
+### Prerequisites
 
-### 1. Define the Chaos Type in the CRD
+- Go 1.23+
+- Kubernetes cluster (v1.18+)
+- kubectl
+- kustomize
+- controller-gen
 
-First, add your new chaos type to the enum in `api/v1alpha1/statefulchaosexperiment_types.go`:
+### Setting Up Your Development Environment
 
-```go
-// ChaosType defines the type of chaos to be injected
-// +kubebuilder:validation:Enum=DiskFailure;NetworkLatency;DatabaseConnectionDisruption;PodFailure;ResourcePressure;DataCorruption;StatefulSetScaling;YourNewChaosType
-ChaosType string `json:"chaosType"`
+1. Clone the repository:
+
+```bash
+git clone https://github.com/havock8s/havock8s.git
+cd havock8s
 ```
 
-### 2. Implement the Injector
+2. Install dependencies:
 
-Create a new file in `pkg/chaos/your_chaos_type.go` that implements both injection and cleanup:
+```bash
+go mod download
+```
+
+3. Generate code and manifests:
+
+```bash
+make generate
+make manifests
+```
+
+4. Build and run the controller locally:
+
+```bash
+make install  # Install CRDs in the cluster
+make run      # Run controller locally
+```
+
+## Implementing a New Chaos Type
+
+To add a new chaos type:
+
+1. Define the chaos type in `api/v1alpha1/havock8sexperiment_types.go`
+2. Create a new injector in `pkg/chaos/`
+3. Register the injector in `pkg/chaos/injector.go`
+4. Update the controller to handle the new chaos type
+5. Add tests for the new chaos type
+6. Add documentation and examples
+
+Example of a chaos injector:
 
 ```go
 package chaos
 
 import (
-    "context"
-    "github.com/go-logr/logr"
-    chaosv1alpha1 "github.com/statefulchaos/statefulchaos/api/v1alpha1"
+	"context"
+	"fmt"
+
+	"github.com/go-logr/logr"
+	chaosv1alpha1 "github.com/havock8s/havock8s/api/v1alpha1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// YourChaosTypeInjector implements chaos for your specific use case
-type YourChaosTypeInjector struct {
-    // Add necessary fields
+// NewChaosInjector creates a new chaos injector for the given experiment
+func NewMyChaosInjector(client client.Client, log logr.Logger) Injector {
+	return &myChaosInjector{
+		client: client,
+		log:    log,
+	}
 }
 
-// Inject applies your chaos type to the target
-func (i *YourChaosTypeInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
-    // Implement your chaos injection logic
-    return nil
+type myChaosInjector struct {
+	client client.Client
+	log    logr.Logger
 }
 
-// Cleanup removes your chaos type from the target
-func (i *YourChaosTypeInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
-    // Implement your cleanup logic
-    return nil
-}
-```
-
-### 3. Register Your Chaos Type in the Controller
-
-Modify the `injectChaos` and `removeChaos` methods in `controllers/statefulchaosexperiment_controller.go`:
-
-```go
-// injectChaos applies the specified chaos to target resources
-func (r *StatefulChaosExperimentReconciler) injectChaos(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
-    chaosType := experiment.Spec.ChaosType
-    log.Info("Injecting chaos", "type", chaosType)
-
-    // Apply different chaos types
-    switch chaosType {
-        // Existing chaos types...
-        case "YourNewChaosType":
-            return r.injectYourChaos(ctx, experiment, log)
-        default:
-            return fmt.Errorf("unsupported chaos type: %s", chaosType)
-    }
+func (i *myChaosInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.havock8sExperiment) error {
+	i.log.Info("Injecting chaos", "type", experiment.Spec.ChaosType)
+	
+	// Implement chaos injection logic here
+	
+	return nil
 }
 
-// Add a new method for your chaos type
-func (r *StatefulChaosExperimentReconciler) injectYourChaos(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
-    injector := &chaos.YourChaosTypeInjector{}
-    return injector.Inject(ctx, experiment, log)
-}
-
-// Don't forget to add the cleanup method as well
-func (r *StatefulChaosExperimentReconciler) removeYourChaos(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
-    injector := &chaos.YourChaosTypeInjector{}
-    return injector.Cleanup(ctx, experiment, log)
+func (i *myChaosInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.havock8sExperiment) error {
+	i.log.Info("Cleaning up chaos", "type", experiment.Spec.ChaosType)
+	
+	// Implement cleanup logic here
+	
+	return nil
 }
 ```
 
-### 4. Create Examples
+## Testing
 
-Add an example in the `examples/` directory:
+### Running Unit Tests
 
-```yaml
-apiVersion: chaos.statefulchaos.io/v1alpha1
-kind: StatefulChaosExperiment
-metadata:
-  name: your-chaos-example
-spec:
-  target:
-    selector:
-      matchLabels:
-        app: your-app
-    targetType: StatefulSet
-  chaosType: YourNewChaosType
-  duration: 5m
-  intensity: 0.5
-  parameters:
-    yourParam1: "value1"
-    yourParam2: "value2"
+```bash
+make test
 ```
 
-## Implementing a New Safety Feature
+### Running Integration Tests
 
-### 1. Extend the Safety Spec
-
-Add your new safety feature to the SafetySpec in `api/v1alpha1/statefulchaosexperiment_types.go`:
-
-```go
-// SafetySpec defines safety mechanisms for chaos experiments
-type SafetySpec struct {
-    // Existing fields...
-    
-    // YourNewSafety defines your new safety feature
-    // +optional
-    YourNewSafety *YourNewSafetySpec `json:"yourNewSafety,omitempty"`
-}
-
-// YourNewSafetySpec defines the parameters for your safety feature
-type YourNewSafetySpec struct {
-    // Define your safety feature fields
-    Enabled bool `json:"enabled"`
-    Parameter string `json:"parameter"`
-}
+```bash
+make test-integration
 ```
 
-### 2. Implement the Safety Logic
+### Running End-to-End Tests
 
-Add your safety check to the `shouldRollbackExperiment` method in `controllers/statefulchaosexperiment_controller.go`:
-
-```go
-// shouldRollbackExperiment checks if experiment should be rolled back based on safety conditions
-func (r *StatefulChaosExperimentReconciler) shouldRollbackExperiment(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment) (bool, string) {
-    // Existing checks...
-    
-    // Check your new safety feature
-    if experiment.Spec.Safety != nil && experiment.Spec.Safety.YourNewSafety != nil && experiment.Spec.Safety.YourNewSafety.Enabled {
-        // Implement your safety check
-        if shouldStop, reason := r.checkYourSafety(ctx, experiment); shouldStop {
-            return true, reason
-        }
-    }
-    
-    return false, ""
-}
-
-// checkYourSafety implements your custom safety check
-func (r *StatefulChaosExperimentReconciler) checkYourSafety(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment) (bool, string) {
-    // Implement your safety check logic
-    return false, ""
-}
+```bash
+make test-e2e
 ```
 
-## Testing Your Changes
+## Building and Deploying
 
-### Unit Tests
+### Building the Controller Image
 
-Create or modify tests in the `controllers/statefulchaosexperiment_controller_test.go` file:
-
-```go
-func TestYourNewChaosType(t *testing.T) {
-    // Implement your test
-}
+```bash
+make docker-build IMG=your-registry/havock8s:tag
 ```
 
-### Integration Tests
+### Pushing the Controller Image
 
-Create an integration test in the `test/` directory.
+```bash
+make docker-push IMG=your-registry/havock8s:tag
+```
 
-### Manual Testing
+### Deploying to a Cluster
 
-1. Build and deploy the operator:
-   ```bash
-   make docker-build
-   make deploy
-   ```
+```bash
+make deploy IMG=your-registry/havock8s:tag
+```
 
-2. Create a test experiment:
-   ```bash
-   kubectl apply -f examples/your-example.yaml
-   ```
+## Debugging
 
-3. Monitor experiment progress:
-   ```bash
-   kubectl get sce
-   kubectl describe sce your-chaos-example
-   ```
+### Enabling Debug Logs
 
-## Contributing
+Set the `--zap-log-level=debug` flag when running the controller.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for your changes
-5. Run tests: `make test`
-6. Submit a pull request
+### Using Delve for Debugging
 
-## Best Practices
+```bash
+dlv debug ./main.go -- --zap-log-level=debug
+```
 
-1. **Safety First**: Always implement proper safety mechanisms for new chaos types
-2. **Logging**: Add detailed logs for debugging
-3. **Error Handling**: Handle all possible error conditions
-4. **Idempotency**: Ensure your controller is idempotent
-5. **Documentation**: Document your chaos type and add examples 
+## Release Process
+
+1. Update version in `VERSION` file
+2. Update CHANGELOG.md
+3. Create a new tag:
+
+```bash
+git tag -a v0.1.0 -m "Release v0.1.0"
+git push origin v0.1.0
+```
+
+4. The CI/CD pipeline will build and publish the release artifacts
+
+## Documentation
+
+Please update the documentation when making changes:
+
+- Update API reference when changing CRDs
+- Add examples for new features
+- Update the developer guide for significant changes
+
+## Getting Help
+
+If you need help or have questions, please:
+
+- Open an issue on GitHub
+- Join our community Slack channel
+- Attend our community meetings 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
-	chaosv1alpha1 "github.com/statefulchaos/statefulchaos/api/v1alpha1"
+	chaosv1alpha1 "github.com/havock8s/havock8s/api/v1alpha1"
 )
 
 // Injector is the interface that defines chaos injection and cleanup methods

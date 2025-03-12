@@ -24,32 +24,13 @@ havock8s is a cloud-native chaos engineering framework specifically designed for
 - Extensible interfaces for custom integrations
 - Open-source foundation for collaboration
 
-### Visualizations and Reporting
-- Integration with Grafana for experiment visualizations
-- Automated experiment reports
-- Performance impact analysis dashboards
+## Documentation
 
-## Getting Started
-
-### Prerequisites
-- Kubernetes cluster (v1.18+)
-- kubectl configured to communicate with your cluster
-- Helm v3 (optional, for chart-based installation)
-
-### Installation
-
-#### Using kubectl
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/havock8s/havock8s/main/config/install.yaml
-```
-
-#### Using Helm
-
-```bash
-helm repo add havock8s https://havock8s.github.io/charts
-helm install havock8s havock8s/havock8s
-```
+- [Getting Started](getting-started.md)
+- [Installation Guide](installation.md)
+- [Developer Guide](developer-guide.md)
+- [API Reference](api-reference.md)
+- [Examples](../examples/README.md)
 
 ## Quick Start
 
@@ -74,16 +55,4 @@ spec:
         path: /health
         port: 8080
         failureThreshold: 3
-```
-
-## Documentation
-
-For detailed documentation, examples, and guides, visit [the official documentation](https://havock8s.github.io).
-
-## Contributing
-
-Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-## License
-
-havock8s is open-source software licensed under the Apache License 2.0. 
+``` 

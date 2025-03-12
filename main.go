@@ -13,8 +13,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
-	chaosv1alpha1 "github.com/statefulchaos/statefulchaos/api/v1alpha1"
-	"github.com/statefulchaos/statefulchaos/controllers"
+	chaosv1alpha1 "github.com/havock8s/havock8s/api/v1alpha1"
 )
 
 var (
@@ -56,7 +55,7 @@ func main() {
 		},
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
-		LeaderElectionID:       "statefulchaos-leader-election",
+		LeaderElectionID:       "havock8s-leader-election",
 	}
 
 	// Initialize controller manager
@@ -67,12 +66,12 @@ func main() {
 	}
 
 	// Set up controller
-	if err = (&controllers.StatefulChaosExperimentReconciler{
+	if err = (&controllers.havock8sExperimentReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("StatefulChaosExperiment"),
+		Log:    ctrl.Log.WithName("controllers").WithName("havock8sExperiment"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "StatefulChaosExperiment")
+		setupLog.Error(err, "unable to create controller", "controller", "havock8sExperiment")
 		os.Exit(1)
 	}
 

@@ -1,4 +1,4 @@
-module github.com/statefulchaos/statefulchaos
+module github.com/havock8s/havock8s
 
 go 1.23.0
 

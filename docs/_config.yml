@@ -1,0 +1,12 @@
+theme: jekyll-theme-cayman
+title: havock8s
+description: A cloud-native chaos engineering framework for stateful applications
+baseurl: ""
+url: "https://havock8s.github.io"
+show_downloads: true
+github:
+  repository_url: https://github.com/havock8s/havock8s
+  zip_url: https://github.com/havock8s/havock8s/archive/main.zip
+  tar_url: https://github.com/havock8s/havock8s/archive/main.tar.gz
+markdown: kramdown
+highlighter: rouge 
