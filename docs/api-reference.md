@@ -362,7 +362,7 @@ If you want to use the Havock8s API programmatically, you can use the Kubernetes
     <div class="docs-card-content">
       <p>Use the generated client in Go:</p>
       <pre><code>import (
-  chaosv1alpha1 "github.com/havock8s/havock8s/pkg/apis/chaos/v1alpha1"
+  chaosv1alpha1 "github.com/samsonkolge/havock8s/api/v1alpha1"
   "k8s.io/client-go/kubernetes/scheme"
 )
 
