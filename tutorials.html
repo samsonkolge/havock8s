@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tutorials - Havock8s</title>
   <link rel="stylesheet" href="/havock8s/assets/css/style.css">
+  <link rel="icon" href="/havock8s/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/havock8s/assets/images/favicon.png" type="image/png">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Tutorials | Havock8s</title>
 <meta name="generator" content="Jekyll v4.4.1" />
@@ -24,28 +26,61 @@
 
 </head>
 <body>
-  <header class="page-header">
-    <h1 class="project-name">Havock8s</h1>
-    <h2 class="project-tagline">A cloud-native chaos engineering framework for stateful applications on Kubernetes</h2>
-    <a href="https://github.com/samsonkolge/havock8s" class="btn">View on GitHub</a>
-    <a href="https://github.com/samsonkolge/havock8s/archive/main.zip" class="btn">Download .zip</a>
-    <a href="https://github.com/samsonkolge/havock8s/archive/main.tar.gz" class="btn">Download .tar.gz</a>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-name">Havock8s</h1>
+      <p class="site-description">A cloud-native chaos engineering framework for stateful applications on Kubernetes</p>
+      <div class="site-actions">
+        <a href="https://github.com/samsonkolge/havock8s" class="site-cta">View on GitHub</a>
+        <a href="/havock8s/getting-started.html" class="site-cta site-cta-secondary">Get Started</a>
+      </div>
+    </div>
   </header>
 
-  <div class="main-content">
-    <nav class="main-nav">
-      <ul>
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container nav-container">
+      <div class="nav-logo">
+        <a href="/havock8s/">
+          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#4a6bdc" />
+            <ellipse cx="16" cy="11" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="11" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="16" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="16" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="21" rx="5" ry="2" fill="#ffab3c" />
+            <path d="M14,8 L12,16 L16,14 L14,24" stroke="white" stroke-width="1.5" fill="none" />
+            <path d="M20,8 L22,16 L18,14 L20,24" stroke="#3ce7b9" stroke-width="1.5" fill="none" />
+          </svg>
+          <span>Havock8s</span>
+        </a>
+      </div>
+      <ul class="nav-links">
         <li><a href="/havock8s/" >Home</a></li>
         <li><a href="/havock8s/getting-started.html" >Getting Started</a></li>
         <li><a href="/havock8s/installation.html" >Installation</a></li>
         <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
         <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
-        <li><a href="/havock8s/developer-guide.html" >Developer Guide</a></li>
         <li><a href="/havock8s/tutorials.html" class="active">Tutorials</a></li>
       </ul>
-    </nav>
+      <div class="nav-right">
+        <div class="search-box">
+          <input type="text" class="search-input" placeholder="Search docs...">
+          <span class="search-icon">🔍</span>
+        </div>
+        <a href="https://github.com/samsonkolge/havock8s" class="github-link" title="View on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
 
-    <h1 id="tutorials">Tutorials</h1>
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="content-area">
+        <h1 id="tutorials">Tutorials</h1>
 
 <p>This section provides step-by-step tutorials for common Havock8s use cases. These tutorials will help you get started with chaos engineering for your stateful applications.</p>
 
@@ -614,15 +649,77 @@ db.testcollection.find<span class="o">()</span>
 
 <p>Check out the <a href="api-reference.html">API Reference</a> and <a href="developer-guide.html">Developer Guide</a> for more information.</p>
 
+      </div>
+      
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Documentation</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/" >Overview</a></li>
+            <li><a href="/havock8s/getting-started.html" >Getting Started</a></li>
+            <li><a href="/havock8s/installation.html" >Installation</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Concepts</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/chaos-types.html" >Chaos Types</a></li>
+            <li><a href="/havock8s/api-reference.html" >API Reference</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Learn</h4>
+          <ul class="sidebar-links">
+            <li><a href="/havock8s/tutorials.html" class="active">Tutorials</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/tree/master/examples">Examples</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Contribute</h4>
+          <ul class="sidebar-links">
+            <li><a href="https://github.com/samsonkolge/havock8s/blob/master/CONTRIBUTING.md">How to Contribute</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/issues">Report an Issue</a></li>
+            <li><a href="https://github.com/samsonkolge/havock8s/blob/master/docs/developer-guide.html">Developer Guide</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
 
-    <footer class="site-footer">
-      <span class="site-footer-owner">
-        <a href="https://github.com/samsonkolge/havock8s">Havock8s</a> is maintained by the Havock8s team.
-      </span>
-      <span class="site-footer-credits">
-        This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
-      </span>
-    </footer>
-  </div>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-info">
+        <ul class="footer-links">
+          <li><a href="https://github.com/samsonkolge/havock8s">GitHub</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/blob/master/LICENSE">License</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="https://github.com/samsonkolge/havock8s/releases">Releases</a></li>
+        </ul>
+      </div>
+      <div class="footer-copyright">
+        <p>Havock8s is maintained by the Havock8s team.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script for simple search functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.search-input');
+      
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const query = searchInput.value.trim();
+          if (query) {
+            window.location.href = `https://github.com/search?q=${encodeURIComponent(query)}+repo:${encodeURIComponent('samsonkolge/havock8s')}+extension:md+path:docs`;
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html> 
