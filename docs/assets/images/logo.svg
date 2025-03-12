@@ -1,0 +1,22 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="90" fill="#4a6bdc" />
+  
+  <!-- Inner Circle (Kubernetes-like) -->
+  <circle cx="100" cy="100" r="70" fill="white" fill-opacity="0.1" stroke="white" stroke-width="2" />
+  
+  <!-- Chaos Pattern - Lightning bolts -->
+  <path d="M80,50 L60,100 L90,90 L70,150" stroke="white" stroke-width="5" fill="none" />
+  <path d="M120,50 L135,100 L105,90 L130,150" stroke="#3ce7b9" stroke-width="5" fill="none" />
+  
+  <!-- Database Symbol -->
+  <ellipse cx="100" cy="70" rx="25" ry="10" fill="#ffab3c" />
+  <rect x="75" y="70" width="50" height="30" fill="#ffab3c" />
+  <ellipse cx="100" cy="100" rx="25" ry="10" fill="#ffab3c" />
+  <rect x="75" y="100" width="50" height="30" fill="#ffab3c" />
+  <ellipse cx="100" cy="130" rx="25" ry="10" fill="#ffab3c" />
+  
+  <!-- Chaos Swirls -->
+  <path d="M40,90 C45,95 60,85 70,95 C80,105 70,115 80,125" stroke="white" stroke-width="3" fill="none" />
+  <path d="M160,90 C155,95 140,85 130,95 C120,105 130,115 120,125" stroke="white" stroke-width="3" fill="none" />
+</svg> 

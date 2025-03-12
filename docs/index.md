@@ -9,65 +9,124 @@ title: Havock8s Documentation
 
 Havock8s is a cloud-native chaos engineering framework specifically designed for stateful applications running on Kubernetes. While many existing chaos engineering tools focus on stateless microservices, Havock8s specializes in testing and enhancing the resilience of stateful components such as databases, caching systems, and persistent storage.
 
+<div class="callout callout-info">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    Getting Started
+  </div>
+  <p>Ready to start testing your stateful applications? Check out our <a href="getting-started.html">Getting Started Guide</a> to begin your chaos engineering journey.</p>
+</div>
+
 ## Why Havock8s?
 
 Traditional chaos engineering tools often focus on stateless services where instances can be easily replaced. However, stateful applications present unique challenges:
 
-- Data persistence requirements
-- Complex recovery procedures
-- State synchronization across replicas
-- Storage dependencies
+- **Data persistence requirements**
+- **Complex recovery procedures**
+- **State synchronization across replicas**
+- **Storage dependencies**
 
 Havock8s addresses these challenges with targeted chaos experiments designed specifically for stateful workloads.
 
 ## Key Features
 
-### Customizable Failure Scenarios
-- Pre-defined chaos scenarios for stateful workloads (disk I/O failures, database connection issues, persistent volume disruptions)
-- Custom experiment framework for defining specialized failure modes
-- Targeted chaos injection for specific components of stateful applications
-
-### Kubernetes-Native Integration
-- Operates as a Kubernetes Operator using Custom Resource Definitions (CRDs)
-- Seamless integration with Prometheus for monitoring and OpenTelemetry for tracing
-- Works with standard Kubernetes resources and StatefulSets
-
-### Safety and Rollback Mechanisms
-- Built-in guardrails to prevent cascading failures
-- Automated rollback features for safe production use
-- Gradual chaos intensity adjustments
-
-### Extensible Plugin Architecture
-- Community-driven plugin system for adding new failure modes
-- Extensible interfaces for custom integrations
-- Open-source foundation for collaboration
-
-## Documentation
+<div class="docs-section">
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Customizable Failure Scenarios</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Pre-defined chaos scenarios for stateful workloads including disk I/O failures, database connection issues, and persistent volume disruptions.</p>
+      <a href="chaos-types.html">Explore Chaos Types →</a>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Kubernetes-Native Integration</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Operates as a Kubernetes Operator using Custom Resource Definitions (CRDs) with seamless integration with Prometheus and OpenTelemetry.</p>
+      <a href="installation.html">Installation Guide →</a>
+    </div>
+  </div>
+  
+  <div class="docs-card">
+    <div class="docs-card-header">
+      <h3>Safety and Rollback Mechanisms</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Built-in guardrails to prevent cascading failures with automated rollback features for safe production use.</p>
+      <a href="api-reference.html#safety-mechanisms">Safety Mechanisms →</a>
+    </div>
+  </div>
+</div>
 
 <div class="docs-section">
   <div class="docs-card">
-    <h3><a href="getting-started.html">Getting Started</a></h3>
-    <p>Quick introduction to Havock8s with setup instructions</p>
+    <div class="docs-card-header">
+      <h3>Extensible Plugin Architecture</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Community-driven plugin system for adding new failure modes with extensible interfaces for custom integrations.</p>
+      <a href="developer-guide.html">Developer Guide →</a>
+    </div>
   </div>
+  
   <div class="docs-card">
-    <h3><a href="installation.html">Installation Guide</a></h3>
-    <p>Detailed installation instructions for different environments</p>
+    <div class="docs-card-header">
+      <h3>Visualizations and Reporting</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Integration with Grafana for experiment visualizations, automated experiment reports, and performance impact analysis dashboards.</p>
+      <a href="tutorials.html">Tutorials →</a>
+    </div>
   </div>
+  
   <div class="docs-card">
-    <h3><a href="chaos-types.html">Chaos Types</a></h3>
-    <p>Overview of available chaos scenarios and their parameters</p>
+    <div class="docs-card-header">
+      <h3>Production-Ready</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Designed for real-world chaos engineering with comprehensive safety mechanisms and gradual chaos introduction features.</p>
+      <a href="https://github.com/samsonkolge/havock8s/tree/master/examples">Examples →</a>
+    </div>
   </div>
+</div>
+
+## Documentation
+
+Our documentation helps you get started with Havock8s quickly and efficiently:
+
+<div class="docs-section">
   <div class="docs-card">
-    <h3><a href="api-reference.html">API Reference</a></h3>
-    <p>Complete reference of all API objects and their fields</p>
+    <div class="docs-card-header">
+      <h3>Getting Started</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Quick introduction to Havock8s with setup instructions</p>
+      <a href="getting-started.html">Read guide →</a>
+    </div>
   </div>
+  
   <div class="docs-card">
-    <h3><a href="developer-guide.html">Developer Guide</a></h3>
-    <p>Instructions for developers who want to contribute or extend</p>
+    <div class="docs-card-header">
+      <h3>Installation Guide</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Detailed installation instructions for different environments</p>
+      <a href="installation.html">Install now →</a>
+    </div>
   </div>
+  
   <div class="docs-card">
-    <h3><a href="tutorials.html">Tutorials</a></h3>
-    <p>Step-by-step guides for common use cases</p>
+    <div class="docs-card-header">
+      <h3>Tutorials</h3>
+    </div>
+    <div class="docs-card-content">
+      <p>Step-by-step guides for common use cases</p>
+      <a href="tutorials.html">Follow tutorials →</a>
+    </div>
   </div>
 </div>
 
@@ -95,6 +154,14 @@ spec:
         port: 8080
         failureThreshold: 3
 ```
+
+<div class="callout callout-tip">
+  <div class="callout-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+    Pro Tip
+  </div>
+  <p>Always start with a low intensity value and gradually increase it to avoid unexpected impacts on your systems. Check out our <a href="tutorials.html">tutorials</a> for more best practices.</p>
+</div>
 
 ## Community
 

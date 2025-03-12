@@ -5,40 +5,137 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <link rel="icon" href="{{ '/assets/images/favicon.svg' | relative_url }}" type="image/svg+xml">
+  <link rel="alternate icon" href="{{ '/assets/images/favicon.png' | relative_url }}" type="image/png">
   {% seo %}
 </head>
 <body>
-  <header class="page-header">
-    <h1 class="project-name">{{ site.title }}</h1>
-    <h2 class="project-tagline">{{ site.description }}</h2>
-    <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
-    <a href="{{ site.github.zip_url }}" class="btn">Download .zip</a>
-    <a href="{{ site.github.tar_url }}" class="btn">Download .tar.gz</a>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-name">{{ site.title }}</h1>
+      <p class="site-description">{{ site.description }}</p>
+      <div class="site-actions">
+        <a href="{{ site.github.repository_url }}" class="site-cta">View on GitHub</a>
+        <a href="{{ '/getting-started.html' | relative_url }}" class="site-cta site-cta-secondary">Get Started</a>
+      </div>
+    </div>
   </header>
 
-  <div class="main-content">
-    <nav class="main-nav">
-      <ul>
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container nav-container">
+      <div class="nav-logo">
+        <a href="{{ '/' | relative_url }}">
+          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#4a6bdc" />
+            <ellipse cx="16" cy="11" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="11" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="16" rx="5" ry="2" fill="#ffab3c" />
+            <rect x="11" y="16" width="10" height="5" fill="#ffab3c" />
+            <ellipse cx="16" cy="21" rx="5" ry="2" fill="#ffab3c" />
+            <path d="M14,8 L12,16 L16,14 L14,24" stroke="white" stroke-width="1.5" fill="none" />
+            <path d="M20,8 L22,16 L18,14 L20,24" stroke="#3ce7b9" stroke-width="1.5" fill="none" />
+          </svg>
+          <span>{{ site.title }}</span>
+        </a>
+      </div>
+      <ul class="nav-links">
         <li><a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Home</a></li>
         <li><a href="{{ '/getting-started.html' | relative_url }}" {% if page.url == '/getting-started.html' %}class="active"{% endif %}>Getting Started</a></li>
         <li><a href="{{ '/installation.html' | relative_url }}" {% if page.url == '/installation.html' %}class="active"{% endif %}>Installation</a></li>
         <li><a href="{{ '/chaos-types.html' | relative_url }}" {% if page.url == '/chaos-types.html' %}class="active"{% endif %}>Chaos Types</a></li>
         <li><a href="{{ '/api-reference.html' | relative_url }}" {% if page.url == '/api-reference.html' %}class="active"{% endif %}>API Reference</a></li>
-        <li><a href="{{ '/developer-guide.html' | relative_url }}" {% if page.url == '/developer-guide.html' %}class="active"{% endif %}>Developer Guide</a></li>
         <li><a href="{{ '/tutorials.html' | relative_url }}" {% if page.url == '/tutorials.html' %}class="active"{% endif %}>Tutorials</a></li>
       </ul>
-    </nav>
+      <div class="nav-right">
+        <div class="search-box">
+          <input type="text" class="search-input" placeholder="Search docs...">
+          <span class="search-icon">🔍</span>
+        </div>
+        <a href="{{ site.github.repository_url }}" class="github-link" title="View on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
 
-    {{ content }}
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="content-area">
+        {{ content }}
+      </div>
+      
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Documentation</h4>
+          <ul class="sidebar-links">
+            <li><a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Overview</a></li>
+            <li><a href="{{ '/getting-started.html' | relative_url }}" {% if page.url == '/getting-started.html' %}class="active"{% endif %}>Getting Started</a></li>
+            <li><a href="{{ '/installation.html' | relative_url }}" {% if page.url == '/installation.html' %}class="active"{% endif %}>Installation</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Concepts</h4>
+          <ul class="sidebar-links">
+            <li><a href="{{ '/chaos-types.html' | relative_url }}" {% if page.url == '/chaos-types.html' %}class="active"{% endif %}>Chaos Types</a></li>
+            <li><a href="{{ '/api-reference.html' | relative_url }}" {% if page.url == '/api-reference.html' %}class="active"{% endif %}>API Reference</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Learn</h4>
+          <ul class="sidebar-links">
+            <li><a href="{{ '/tutorials.html' | relative_url }}" {% if page.url == '/tutorials.html' %}class="active"{% endif %}>Tutorials</a></li>
+            <li><a href="{{ site.github.repository_url }}/tree/master/examples">Examples</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Contribute</h4>
+          <ul class="sidebar-links">
+            <li><a href="{{ site.github.repository_url }}/blob/master/CONTRIBUTING.md">How to Contribute</a></li>
+            <li><a href="{{ site.github.repository_url }}/issues">Report an Issue</a></li>
+            <li><a href="{{ site.github.repository_url }}/blob/master/docs/developer-guide.html">Developer Guide</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
 
-    <footer class="site-footer">
-      <span class="site-footer-owner">
-        <a href="{{ site.github.repository_url }}">{{ site.title }}</a> is maintained by the Havock8s team.
-      </span>
-      <span class="site-footer-credits">
-        This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
-      </span>
-    </footer>
-  </div>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-info">
+        <ul class="footer-links">
+          <li><a href="{{ site.github.repository_url }}">GitHub</a></li>
+          <li><a href="{{ site.github.repository_url }}/blob/master/LICENSE">License</a></li>
+          <li><a href="{{ site.github.repository_url }}/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="{{ site.github.repository_url }}/releases">Releases</a></li>
+        </ul>
+      </div>
+      <div class="footer-copyright">
+        <p>{{ site.title }} is maintained by the Havock8s team.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script for simple search functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.search-input');
+      
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const query = searchInput.value.trim();
+          if (query) {
+            window.location.href = `https://github.com/search?q=${encodeURIComponent(query)}+repo:${encodeURIComponent('samsonkolge/havock8s')}+extension:md+path:docs`;
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html> 

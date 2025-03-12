@@ -1,0 +1,15 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="16" cy="16" r="15" fill="#4a6bdc" />
+  
+  <!-- Database Symbol (Simplified) -->
+  <ellipse cx="16" cy="11" rx="5" ry="2" fill="#ffab3c" />
+  <rect x="11" y="11" width="10" height="5" fill="#ffab3c" />
+  <ellipse cx="16" cy="16" rx="5" ry="2" fill="#ffab3c" />
+  <rect x="11" y="16" width="10" height="5" fill="#ffab3c" />
+  <ellipse cx="16" cy="21" rx="5" ry="2" fill="#ffab3c" />
+  
+  <!-- Lightning (Simplified) -->
+  <path d="M14,8 L12,16 L16,14 L14,24" stroke="white" stroke-width="1.5" fill="none" />
+  <path d="M20,8 L22,16 L18,14 L20,24" stroke="#3ce7b9" stroke-width="1.5" fill="none" />
+</svg> 
