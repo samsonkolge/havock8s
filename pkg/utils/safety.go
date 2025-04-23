@@ -3,171 +3,152 @@ package utils
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-logr/logr"
 	chaosv1alpha1 "github.com/havock8s/havock8s/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// SafetyChecker provides methods to check if safety conditions are met
+// SafetyChecker provides safety mechanisms for chaos experiments
 type SafetyChecker struct {
 	client client.Client
 }
 
-// NewSafetyChecker creates a new SafetyChecker
+// NewSafetyChecker creates a new SafetyChecker instance
 func NewSafetyChecker(c client.Client) *SafetyChecker {
-	return &SafetyChecker{
-		client: c,
-	}
+	return &SafetyChecker{client: c}
 }
 
-// CheckHealthEndpoints checks if health endpoints are responding correctly
-func (s *SafetyChecker) CheckHealthEndpoints(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) (bool, string) {
+// CheckSafety performs all safety checks for an experiment
+func (s *SafetyChecker) CheckSafety(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (bool, string) {
+	// Check protected resources
+	if shouldRollback, reason := s.CheckProtectedResources(ctx, experiment, logger); shouldRollback {
+		return true, reason
+	}
+
+	// Check health endpoints
+	if shouldRollback, reason := s.CheckHealthEndpoints(ctx, experiment, logger); shouldRollback {
+		return true, reason
+	}
+
+	// Check metric conditions
+	if shouldRollback, reason := s.CheckMetricConditions(ctx, experiment, logger); shouldRollback {
+		return true, reason
+	}
+
+	return false, ""
+}
+
+// CheckProtectedResources verifies that no protected resources will be affected
+func (s *SafetyChecker) CheckProtectedResources(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (bool, string) {
+	// Check if target namespace is protected
+	if experiment.Spec.Target.Namespace == "kube-system" {
+		return true, "Target namespace kube-system is protected"
+	}
+
+	// Check if target pod has protection annotation
+	if experiment.Spec.Target.TargetType == "Pod" {
+		pod := &corev1.Pod{}
+		err := s.client.Get(ctx, types.NamespacedName{
+			Name:      experiment.Spec.Target.Name,
+			Namespace: experiment.Spec.Target.Namespace,
+		}, pod)
+		if err != nil {
+			logger.Error(err, "Failed to get target pod")
+			return true, "Failed to verify pod protection status"
+		}
+
+		if pod.Annotations["havock8s.io/protected"] == "true" {
+			return true, "Pod has protection annotation"
+		}
+	}
+
+	return false, ""
+}
+
+// CheckHealthEndpoints verifies that health check endpoints are responding
+func (s *SafetyChecker) CheckHealthEndpoints(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (bool, string) {
 	if experiment.Spec.Safety == nil || len(experiment.Spec.Safety.HealthChecks) == 0 {
 		return false, ""
 	}
 
-	for _, healthCheck := range experiment.Spec.Safety.HealthChecks {
-		switch healthCheck.Type {
+	for _, check := range experiment.Spec.Safety.HealthChecks {
+		switch check.Type {
 		case "httpGet":
-			healthy, reason := s.checkHTTPEndpoint(ctx, experiment, healthCheck, log)
-			if !healthy {
-				return true, reason // Return true to indicate rollback needed
+			if !s.checkHTTPEndpoint(check.Path, check.Port) {
+				return true, fmt.Sprintf("Health check failed for endpoint %s:%d", check.Path, check.Port)
 			}
 		case "tcpSocket":
-			healthy, reason := s.checkTCPEndpoint(ctx, experiment, healthCheck, log)
-			if !healthy {
-				return true, reason // Return true to indicate rollback needed
-			}
-		case "exec":
-			// In a real implementation, this would execute a command in a pod
-			// and check the result
-		}
-	}
-
-	return false, "" // All checks passed, no rollback needed
-}
-
-// checkHTTPEndpoint checks if an HTTP endpoint is healthy
-func (s *SafetyChecker) checkHTTPEndpoint(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, healthCheck chaosv1alpha1.HealthCheckSpec, log logr.Logger) (bool, string) {
-	// In a real implementation, this would:
-	// 1. Find the pod/service with the endpoint
-	// 2. Make HTTP requests to the endpoint
-	// 3. Check if the response is as expected
-
-	// For this example, we'll just simulate a check
-	log.Info("Checking HTTP endpoint", "path", healthCheck.Path, "port", healthCheck.Port)
-
-	// Create a simple HTTP client with timeout
-	_ = &http.Client{
-		Timeout: 5 * time.Second,
-	}
-
-	// Construct URL (in a real implementation, this would use the actual pod/service IP)
-	url := fmt.Sprintf("http://example:8080%s", healthCheck.Path)
-	log.Info("Would check URL", "url", url)
-
-	// In a real implementation, we would create and execute the request
-	// req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-	// resp, err := client.Do(req)
-
-	// Simulate a healthy response
-	return false, ""
-}
-
-// checkTCPEndpoint checks if a TCP endpoint is reachable
-func (s *SafetyChecker) checkTCPEndpoint(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, healthCheck chaosv1alpha1.HealthCheckSpec, log logr.Logger) (bool, string) {
-	// In a real implementation, this would:
-	// 1. Find the pod/service with the endpoint
-	// 2. Try to establish a TCP connection
-	// 3. Check if the connection is successful
-
-	// For this example, we'll just simulate a check
-	log.Info("Checking TCP endpoint", "port", healthCheck.Port)
-
-	// Simulate a healthy response
-	return false, ""
-}
-
-// CheckProtectedResources checks if the experiment targets any protected resources
-func (s *SafetyChecker) CheckProtectedResources(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) (bool, string) {
-	if experiment.Spec.Safety == nil || len(experiment.Spec.Safety.ResourceProtections) == 0 {
-		return false, ""
-	}
-
-	for _, target := range experiment.Status.TargetResources {
-		for _, protection := range experiment.Spec.Safety.ResourceProtections {
-			switch protection.Type {
-			case "Namespace":
-				if target.Namespace == protection.Value {
-					return true, fmt.Sprintf("Target namespace %s is protected", target.Namespace)
-				}
-			case "Label":
-				// In a real implementation, this would check if the target has the protected label
-				// For this example, we'll just simulate a check
-			case "Annotation":
-				// In a real implementation, this would check if the target has the protected annotation
-				// For this example, we'll just simulate a check
-			case "Name":
-				if target.Name == protection.Value {
-					return true, fmt.Sprintf("Target name %s is protected", target.Name)
-				}
+			if !s.checkTCPEndpoint(check.Port) {
+				return true, fmt.Sprintf("Health check failed for TCP port %d", check.Port)
 			}
 		}
 	}
 
-	return false, "" // No protected resources found
+	return false, ""
 }
 
-// CheckMetricConditions checks if any metric-based pause conditions are met
-func (s *SafetyChecker) CheckMetricConditions(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) (bool, string) {
+// CheckMetricConditions verifies that metric-based conditions are met
+func (s *SafetyChecker) CheckMetricConditions(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (bool, string) {
 	if experiment.Spec.Safety == nil || len(experiment.Spec.Safety.PauseConditions) == 0 {
 		return false, ""
 	}
 
 	for _, condition := range experiment.Spec.Safety.PauseConditions {
-		if condition.Type == "metric" && condition.MetricQuery != "" {
-			// In a real implementation, this would:
-			// 1. Query a metrics system (Prometheus, etc.) with the provided query
-			// 2. Evaluate the result against a threshold
-			// 3. Determine if the condition is met
+		if condition.Type == "metric" {
+			// Example: Check MongoDB connections
+			if condition.MetricQuery == "mongodb_connections" {
+				threshold, err := strconv.ParseFloat(condition.Threshold, 64)
+				if err != nil {
+					logger.Error(err, "Failed to parse threshold")
+					continue
+				}
 
-			log.Info("Checking metric condition", "query", condition.MetricQuery)
-
-			// For this example, we'll just simulate a check
-			// In a real implementation, we would query Prometheus or another metrics system
-
-			// Simulate that all conditions are fine
-			return false, ""
+				currentValue := s.getMetricValue(condition.MetricQuery)
+				if currentValue > threshold {
+					return true, fmt.Sprintf("Metric %s exceeds threshold: %v > %v",
+						condition.MetricQuery, currentValue, threshold)
+				}
+			}
 		}
-	}
-
-	return false, "" // No metric conditions triggered
-}
-
-// IsProtectedPod checks if a pod is protected from chaos
-func (s *SafetyChecker) IsProtectedPod(ctx context.Context, pod *corev1.Pod, log logr.Logger) (bool, string) {
-	// Check for protection annotations
-	if pod.Annotations != nil {
-		if val, ok := pod.Annotations["statefulchaos.io/protected"]; ok && val == "true" {
-			return true, "Pod has protection annotation"
-		}
-	}
-
-	// Check for protection labels
-	if pod.Labels != nil {
-		if val, ok := pod.Labels["statefulchaos.io/protected"]; ok && val == "true" {
-			return true, "Pod has protection label"
-		}
-	}
-
-	// Check if pod is in kube-system namespace
-	if pod.Namespace == "kube-system" {
-		return true, "Pod is in kube-system namespace"
 	}
 
 	return false, ""
 }
+
+// Helper functions
+
+func (s *SafetyChecker) checkHTTPEndpoint(path string, port int32) bool {
+	url := fmt.Sprintf("http://localhost:%d%s", port, path)
+	resp, err := http.Get(url)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode == http.StatusOK
+}
+
+func (s *SafetyChecker) checkTCPEndpoint(port int32) bool {
+	addr := fmt.Sprintf("localhost:%d", port)
+	conn, err := net.DialTimeout("tcp", addr, time.Second*5)
+	if err != nil {
+		return false
+	}
+	defer conn.Close()
+	return true
+}
+
+func (s *SafetyChecker) getMetricValue(query string) float64 {
+	// This is a placeholder. In a real implementation, this would query
+	// a metrics system like Prometheus
+	return 0.0
+}
+
+
+

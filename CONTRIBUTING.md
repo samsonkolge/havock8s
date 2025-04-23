@@ -70,12 +70,12 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/statefulchaos.git
-   cd statefulchaos
+   git clone https://github.com/YOUR-USERNAME/havock8s.git
+   cd havock8s
    ```
 3. Add the original repository as an upstream remote:
    ```bash
-   git remote add upstream https://github.com/statefulchaos/statefulchaos.git
+   git remote add upstream https://github.com/havock8s/havock8s.git
    ```
 4. Install dependencies:
    ```bash
@@ -115,12 +115,12 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 
 ## Adding New Chaos Types
 
-StatefulChaos is designed to be extensible. To add a new chaos type:
+Havock8s is designed to be extensible. To add a new chaos type:
 
-1. Define the chaos type in the CRD (`api/v1alpha1/statefulchaosexperiment_types.go`)
+1. Define the chaos type in the CRD (`api/v1alpha1/havock8sexperiment_types.go`)
 2. Create a new injector in `pkg/chaos/your_chaos_type.go`
 3. Register your injector in `pkg/chaos/injector.go`
-4. Add controller logic in `controllers/statefulchaosexperiment_controller.go`
+4. Add controller logic in `controllers/havock8sexperiment_controller.go`
 5. Create example YAML files in the `examples/` directory
 6. Add tests for your new chaos type
 
@@ -164,4 +164,4 @@ See the [Developer Guide](docs/developer-guide.md) for more detailed instruction
 - Help answer questions from other users
 - Share your use cases and feedback
 
-Thank you for contributing to StatefulChaos! 
+Thank you for contributing to Havock8s! 

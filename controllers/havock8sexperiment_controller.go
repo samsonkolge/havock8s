@@ -2,18 +2,25 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/go-logr/logr"
-	"k8s.io/apimachinery/pkg/api/errors"
+	chaosv1alpha1 "github.com/havock8s/havock8s/api/v1alpha1"
+	"github.com/havock8s/havock8s/pkg/chaos"
+	"github.com/havock8s/havock8s/pkg/utils"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// havock8sExperimentReconciler reconciles a havock8sExperiment object
-type havock8sExperimentReconciler struct {
+// Havock8sExperimentReconciler reconciles a Havock8sExperiment object
+type Havock8sExperimentReconciler struct {
 	client.Client
-	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
@@ -27,76 +34,215 @@ type havock8sExperimentReconciler struct {
 // +kubebuilder:rbac:groups=core,resources=persistentvolumes,verbs=get;list;watch
 // +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch
 
-// Reconcile handles the main reconciliation loop for havock8sExperiment resources
-func (r *havock8sExperimentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log := r.Log.WithValues("havock8sexperiment", req.NamespacedName)
+// Reconcile handles the reconciliation of Havock8sExperiment resources
+func (r *Havock8sExperimentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	logger := log.FromContext(ctx)
 
-	// Fetch the havock8sExperiment instance
-	experiment := &chaosv1alpha1.havock8sExperiment{}
+	// Fetch the Havock8sExperiment instance
+	experiment := &chaosv1alpha1.Havock8sExperiment{}
 	if err := r.Get(ctx, req.NamespacedName, experiment); err != nil {
-		if errors.IsNotFound(err) {
-			// Request object not found, could have been deleted
-			return ctrl.Result{}, nil
-		}
-		// Error reading the object
-		log.Error(err, "Failed to get havock8sExperiment")
-		return ctrl.Result{}, err
+		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	// Initialize finalizer
-	finalizerName := "chaos.havock8s.io/finalizer"
-
-	// Examine if the object is being deleted
-	if experiment.ObjectMeta.DeletionTimestamp.IsZero() {
-		// The object is not being deleted, so if it does not have our finalizer,
-		// then add the finalizer
-		if !containsString(experiment.ObjectMeta.Finalizers, finalizerName) {
-			experiment.ObjectMeta.Finalizers = append(experiment.ObjectMeta.Finalizers, finalizerName)
-			if err := r.Update(ctx, experiment); err != nil {
-				return ctrl.Result{}, err
-			}
-		}
-	} else {
-		// The object is being deleted
-		if containsString(experiment.ObjectMeta.Finalizers, finalizerName) {
-			// Handle experiment deletion
-			return r.handleExperimentDeletion(ctx, experiment, log)
-		}
-		// Our finalizer has finished, so the reconciler loop can stop
-		return ctrl.Result{}, nil
+	// Handle experiment deletion
+	if !experiment.DeletionTimestamp.IsZero() {
+		return r.handleExperimentDeletion(ctx, experiment, logger)
 	}
 
-	// Main reconciliation logic
+	// Process experiment based on its phase
 	switch experiment.Status.Phase {
 	case "":
-		// Initialize the experiment
-		return r.initializeExperiment(ctx, experiment, log)
+		// Initialize new experiment
+		return r.initializeExperiment(ctx, experiment, logger)
 	case "Pending":
 		// Process pending experiment
-		return r.processPendingExperiment(ctx, experiment, log)
+		return r.processPendingExperiment(ctx, experiment, logger)
 	case "Running":
 		// Process running experiment
-		return r.processRunningExperiment(ctx, experiment, log)
-	case "Completed":
-		// Already completed, nothing to do
-		return ctrl.Result{}, nil
-	case "Failed":
-		// Already failed, nothing to do
-		return ctrl.Result{}, nil
+		return r.processRunningExperiment(ctx, experiment, logger)
 	default:
-		log.Info("Unknown experiment phase", "phase", experiment.Status.Phase)
+		// No action needed for completed or failed experiments
 		return ctrl.Result{}, nil
 	}
 }
 
-// Functions like initializeExperiment, processPendingExperiment, etc. would follow.
-// They would be similar to the previous implementation but with updated types.
-
-// SetupWithManager sets up the controller with the Manager.
-func (r *havock8sExperimentReconciler) SetupWithManager(mgr ctrl.Manager) error {
+// SetupWithManager sets up the controller with the Manager
+func (r *Havock8sExperimentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&chaosv1alpha1.havock8sExperiment{}).
+		For(&chaosv1alpha1.Havock8sExperiment{}).
 		Complete(r)
+}
+
+// handleExperimentDeletion handles cleanup when an experiment is being deleted
+func (r *Havock8sExperimentReconciler) handleExperimentDeletion(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (ctrl.Result, error) {
+	// Perform cleanup
+	injector, err := chaos.GetInjector(experiment.Spec.ChaosType)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	injector.SetClient(r.Client)
+	if err := injector.Cleanup(ctx, experiment, logger); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	return ctrl.Result{}, nil
+}
+
+// initializeExperiment initializes a new experiment
+func (r *Havock8sExperimentReconciler) initializeExperiment(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (ctrl.Result, error) {
+	// Set initial phase
+	experiment.Status.Phase = "Pending"
+	experiment.Status.StartTime = &metav1.Time{Time: time.Now()}
+
+	if err := r.Status().Update(ctx, experiment); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	return ctrl.Result{Requeue: true}, nil
+}
+
+// processPendingExperiment processes an experiment in the Pending phase
+func (r *Havock8sExperimentReconciler) processPendingExperiment(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (ctrl.Result, error) {
+	// Check if target exists
+	targetExists, err := utils.CheckTargetExists(ctx, r.Client, experiment.Spec.Target)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	if !targetExists {
+		experiment.Status.Phase = "Failed"
+		experiment.Status.FailureReason = "Target resource not found"
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{}, fmt.Errorf("target resource not found")
+	}
+
+	// Check safety conditions
+	safetyChecker := utils.NewSafetyChecker(r.Client)
+	if shouldRollback, reason := safetyChecker.CheckSafety(ctx, experiment, logger); shouldRollback {
+		experiment.Status.Phase = "Failed"
+		experiment.Status.FailureReason = reason
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{}, fmt.Errorf(reason)
+	}
+
+	// Set up target resources in status
+	if experiment.Spec.Target.TargetType == "Pod" {
+		// Get the pod to get its UID
+		pod := &corev1.Pod{}
+		err := r.Get(ctx, types.NamespacedName{
+			Namespace: experiment.Spec.Target.Namespace,
+			Name:      experiment.Spec.Target.Name,
+		}, pod)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+
+		experiment.Status.TargetResources = []chaosv1alpha1.TargetResourceStatus{
+			{
+				Kind:      "Pod",
+				Name:      pod.Name,
+				Namespace: pod.Namespace,
+				UID:       string(pod.UID),
+				Status:    "Targeted",
+			},
+		}
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+	}
+
+	// Start chaos injection
+	injector, err := chaos.GetInjector(experiment.Spec.ChaosType)
+	if err != nil {
+		experiment.Status.Phase = "Failed"
+		experiment.Status.FailureReason = err.Error()
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{}, err
+	}
+
+	injector.SetClient(r.Client)
+	if err := injector.Inject(ctx, experiment, logger); err != nil {
+		experiment.Status.Phase = "Failed"
+		experiment.Status.FailureReason = err.Error()
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{}, err
+	}
+
+	// Update status to Running
+	experiment.Status.Phase = "Running"
+	if err := r.Status().Update(ctx, experiment); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	return ctrl.Result{RequeueAfter: time.Second * 30}, nil
+}
+
+// processRunningExperiment processes an experiment in the Running phase
+func (r *Havock8sExperimentReconciler) processRunningExperiment(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) (ctrl.Result, error) {
+	// Check if experiment duration has elapsed
+	duration, err := time.ParseDuration(experiment.Spec.Duration)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// If StartTime is nil, set it to now
+	if experiment.Status.StartTime == nil {
+		experiment.Status.StartTime = &metav1.Time{Time: time.Now()}
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{RequeueAfter: time.Second * 30}, nil
+	}
+
+	if time.Since(experiment.Status.StartTime.Time) > duration {
+		// Clean up chaos
+		injector, err := chaos.GetInjector(experiment.Spec.ChaosType)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+
+		injector.SetClient(r.Client)
+		if err := injector.Cleanup(ctx, experiment, logger); err != nil {
+			return ctrl.Result{}, err
+		}
+
+		// Update status to Completed
+		experiment.Status.Phase = "Completed"
+		experiment.Status.EndTime = &metav1.Time{Time: time.Now()}
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+
+		return ctrl.Result{}, nil
+	}
+
+	// Check if target still exists
+	targetExists, err := utils.CheckTargetExists(ctx, r.Client, experiment.Spec.Target)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// If target doesn't exist and it's a pod failure experiment, this is expected
+	if !targetExists && experiment.Spec.ChaosType == "pod-failure" {
+		// Update status to Completed since the pod has been successfully deleted
+		experiment.Status.Phase = "Completed"
+		experiment.Status.EndTime = &metav1.Time{Time: time.Now()}
+		if err := r.Status().Update(ctx, experiment); err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{}, nil
+	}
+
+	// Continue monitoring
+	return ctrl.Result{RequeueAfter: time.Second * 30}, nil
 }
 
 // Helper functions
@@ -117,4 +263,25 @@ func removeString(slice []string, s string) []string {
 		}
 	}
 	return result
+}
+
+// cleanupExperiment performs cleanup for an experiment
+func (r *Havock8sExperimentReconciler) cleanupExperiment(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, logger logr.Logger) error {
+	injector, err := chaos.GetInjector(experiment.Spec.ChaosType)
+	if err != nil {
+		return err
+	}
+
+	injector.SetClient(r.Client)
+	if err := injector.Cleanup(ctx, experiment, logger); err != nil {
+		return err
+	}
+
+	experiment.Status.Phase = "Completed"
+	experiment.Status.EndTime = &metav1.Time{Time: time.Now()}
+	if err := r.Status().Update(ctx, experiment); err != nil {
+		return err
+	}
+
+	return nil
 }

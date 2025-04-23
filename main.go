@@ -14,6 +14,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	chaosv1alpha1 "github.com/havock8s/havock8s/api/v1alpha1"
+	"github.com/havock8s/havock8s/controllers"
+	_ "github.com/havock8s/havock8s/pkg/chaos"
 )
 
 var (
@@ -66,9 +68,8 @@ func main() {
 	}
 
 	// Set up controller
-	if err = (&controllers.havock8sExperimentReconciler{
+	if err = (&controllers.Havock8sExperimentReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("havock8sExperiment"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "havock8sExperiment")

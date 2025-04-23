@@ -22,7 +22,7 @@ func (i *DiskFailureInjector) SetClient(c client.Client) {
 }
 
 // Inject applies disk failure chaos
-func (i *DiskFailureInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
+func (i *DiskFailureInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, log logr.Logger) error {
 	log.Info("Injecting disk failure chaos")
 
 	for _, target := range experiment.Status.TargetResources {
@@ -55,7 +55,7 @@ func (i *DiskFailureInjector) Inject(ctx context.Context, experiment *chaosv1alp
 }
 
 // Cleanup removes disk failure chaos
-func (i *DiskFailureInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
+func (i *DiskFailureInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, log logr.Logger) error {
 	log.Info("Cleaning up disk failure chaos")
 
 	for _, target := range experiment.Status.TargetResources {
@@ -88,13 +88,8 @@ func (i *DiskFailureInjector) Cleanup(ctx context.Context, experiment *chaosv1al
 }
 
 // injectPodDiskFailure applies disk failure to a pod
-func (i *DiskFailureInjector) injectPodDiskFailure(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
-	// In a real implementation, this would inject faults using:
-	// 1. Add a sidecar that uses ioutil to generate I/O errors
-	// 2. Patch the pod with an annotation that triggers admission controllers
-	// 3. Use node-level tools to inject failures into the storage subsystem
-
-	// Example: Get the pod and make annotations
+func (i *DiskFailureInjector) injectPodDiskFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+	// Get the pod
 	pod := &corev1.Pod{}
 	err := i.client.Get(ctx, types.NamespacedName{
 		Namespace: target.Namespace,
@@ -104,14 +99,42 @@ func (i *DiskFailureInjector) injectPodDiskFailure(ctx context.Context, experime
 		return fmt.Errorf("failed to get pod %s/%s: %w", target.Namespace, target.Name, err)
 	}
 
-	// In a real implementation, here we would apply the disk failure
+	// Validate failure mode
+	failureMode, ok := experiment.Spec.Parameters["failureMode"]
+	if !ok {
+		return fmt.Errorf("failureMode parameter is required")
+	}
+	if failureMode != "readonly" && failureMode != "writeonly" && failureMode != "readwrite" {
+		return fmt.Errorf("invalid failure mode: %s", failureMode)
+	}
+
+	// Get mount path
+	mountPath, ok := experiment.Spec.Parameters["mountPath"]
+	if !ok {
+		return fmt.Errorf("mountPath parameter is required")
+	}
+
+	// Initialize annotations if nil
+	if pod.Annotations == nil {
+		pod.Annotations = make(map[string]string)
+	}
+
+	// Set disk failure annotations
+	pod.Annotations["havock8s.io/disk-failure"] = "true"
+	pod.Annotations["havock8s.io/disk-failure-mount"] = mountPath
+	pod.Annotations["havock8s.io/disk-failure-mode"] = failureMode
+
+	// Update the pod with new annotations
+	if err := i.client.Update(ctx, pod); err != nil {
+		return fmt.Errorf("failed to update pod %s/%s: %w", target.Namespace, target.Name, err)
+	}
 
 	log.Info("Applied disk failure to pod", "pod", target.Name)
 	return nil
 }
 
 // injectStatefulSetDiskFailure applies disk failure to a StatefulSet's PVCs
-func (i *DiskFailureInjector) injectStatefulSetDiskFailure(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+func (i *DiskFailureInjector) injectStatefulSetDiskFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
 	// In a real implementation, this would find PVCs associated with the StatefulSet
 	// and apply disk failures to them
 
@@ -120,7 +143,7 @@ func (i *DiskFailureInjector) injectStatefulSetDiskFailure(ctx context.Context, 
 }
 
 // injectPVCDiskFailure applies disk failure to a PVC
-func (i *DiskFailureInjector) injectPVCDiskFailure(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+func (i *DiskFailureInjector) injectPVCDiskFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
 	// In a real implementation, this would:
 	// 1. Identify the PVC and associated PV
 	// 2. Depending on the storage class, apply appropriate failure mechanisms
@@ -131,15 +154,35 @@ func (i *DiskFailureInjector) injectPVCDiskFailure(ctx context.Context, experime
 }
 
 // cleanupPodDiskFailure removes disk failure from a pod
-func (i *DiskFailureInjector) cleanupPodDiskFailure(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
-	// Clean up whatever was done in injectPodDiskFailure
+func (i *DiskFailureInjector) cleanupPodDiskFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+	// Get the pod
+	pod := &corev1.Pod{}
+	err := i.client.Get(ctx, types.NamespacedName{
+		Namespace: target.Namespace,
+		Name:      target.Name,
+	}, pod)
+	if err != nil {
+		return fmt.Errorf("failed to get pod %s/%s: %w", target.Namespace, target.Name, err)
+	}
+
+	// Remove disk failure annotations if they exist
+	if pod.Annotations != nil {
+		delete(pod.Annotations, "havock8s.io/disk-failure")
+		delete(pod.Annotations, "havock8s.io/disk-failure-mount")
+		delete(pod.Annotations, "havock8s.io/disk-failure-mode")
+	}
+
+	// Update the pod to remove annotations
+	if err := i.client.Update(ctx, pod); err != nil {
+		return fmt.Errorf("failed to update pod %s/%s: %w", target.Namespace, target.Name, err)
+	}
 
 	log.Info("Removed disk failure from pod", "pod", target.Name)
 	return nil
 }
 
 // cleanupStatefulSetDiskFailure removes disk failure from a StatefulSet's PVCs
-func (i *DiskFailureInjector) cleanupStatefulSetDiskFailure(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+func (i *DiskFailureInjector) cleanupStatefulSetDiskFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
 	// Clean up whatever was done in injectStatefulSetDiskFailure
 
 	log.Info("Removed disk failure from StatefulSet", "statefulset", target.Name)
@@ -147,7 +190,7 @@ func (i *DiskFailureInjector) cleanupStatefulSetDiskFailure(ctx context.Context,
 }
 
 // cleanupPVCDiskFailure removes disk failure from a PVC
-func (i *DiskFailureInjector) cleanupPVCDiskFailure(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+func (i *DiskFailureInjector) cleanupPVCDiskFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
 	// Clean up whatever was done in injectPVCDiskFailure
 
 	log.Info("Removed disk failure from PVC", "pvc", target.Name)

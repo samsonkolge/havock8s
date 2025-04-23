@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: havock8s-controller-manager
+  namespace: havock8s-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: havock8s-controller-manager
+  template:
+    metadata:
+      labels:
+        app: havock8s-controller-manager
+    spec:
+      containers:
+      - name: manager
+        image: havock8s:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: metrics
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      serviceAccountName: havock8s-controller-manager 

@@ -1,0 +1,97 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: havock8s-manager-role
+rules:
+- apiGroups:
+  - chaos.havock8s.io
+  resources:
+  - havock8sexperiments
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - chaos.havock8s.io
+  resources:
+  - havock8sexperiments/status
+  verbs:
+  - get
+  - update
+  - patch
+- apiGroups:
+  - chaos.havock8s.io
+  resources:
+  - havock8sexperiments/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: havock8s-manager-rolebinding
+  labels:
+    app: havock8s-controller-manager
+subjects:
+- kind: ServiceAccount
+  name: havock8s-controller-manager
+  namespace: havock8s-system
+roleRef:
+  kind: ClusterRole
+  name: havock8s-manager-role
+  apiGroup: rbac.authorization.k8s.io 

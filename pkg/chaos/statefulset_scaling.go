@@ -23,7 +23,7 @@ func (i *StatefulSetScalingInjector) SetClient(c client.Client) {
 }
 
 // Inject applies StatefulSet scaling chaos
-func (i *StatefulSetScalingInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
+func (i *StatefulSetScalingInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, log logr.Logger) error {
 	log.Info("Injecting StatefulSet scaling chaos")
 
 	// Default scaling behavior is to scale down by 1
@@ -102,7 +102,7 @@ func (i *StatefulSetScalingInjector) Inject(ctx context.Context, experiment *cha
 
 		// Save original replica count
 		originalReplicas := *sts.Spec.Replicas
-		sts.Annotations["statefulchaos.io/original-replicas"] = fmt.Sprintf("%d", originalReplicas)
+		sts.Annotations["havock8s.io/original-replicas"] = fmt.Sprintf("%d", originalReplicas)
 
 		// Calculate new replica count based on scale mode
 		var newReplicas int32
@@ -143,7 +143,7 @@ func (i *StatefulSetScalingInjector) Inject(ctx context.Context, experiment *cha
 }
 
 // Cleanup reverts StatefulSet scaling changes
-func (i *StatefulSetScalingInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
+func (i *StatefulSetScalingInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, log logr.Logger) error {
 	log.Info("Cleaning up StatefulSet scaling chaos")
 
 	for _, target := range experiment.Status.TargetResources {
@@ -164,7 +164,7 @@ func (i *StatefulSetScalingInjector) Cleanup(ctx context.Context, experiment *ch
 
 		// Check if we have stored the original replica count
 		if sts.Annotations != nil {
-			if originalReplicasStr, ok := sts.Annotations["statefulchaos.io/original-replicas"]; ok {
+			if originalReplicasStr, ok := sts.Annotations["havock8s.io/original-replicas"]; ok {
 				originalReplicas, err := strconv.Atoi(originalReplicasStr)
 				if err != nil {
 					log.Error(err, "Failed to parse original replicas", "value", originalReplicasStr)
@@ -182,7 +182,7 @@ func (i *StatefulSetScalingInjector) Cleanup(ctx context.Context, experiment *ch
 				}
 
 				// Remove our annotation
-				delete(sts.Annotations, "statefulchaos.io/original-replicas")
+				delete(sts.Annotations, "havock8s.io/original-replicas")
 				if err := i.client.Update(ctx, sts); err != nil {
 					log.Error(err, "Failed to update StatefulSet annotations", "StatefulSet", target.Name)
 					return err

@@ -1,0 +1,15 @@
+apiVersion: chaos.havock8s.io/v1alpha1
+kind: Havock8sExperiment
+metadata:
+  name: test-pod-failure
+  namespace: test
+spec:
+  target:
+    name: test-pod
+    targetType: Pod
+    namespace: test
+  chaosType: PodFailure
+  duration: 5m
+  intensity: 1.0
+  safety:
+    autoRollback: true 

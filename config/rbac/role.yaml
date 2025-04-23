@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: havock8s-controller-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "delete", "create"]
+- apiGroups: ["chaos.havock8s.io"]
+  resources: ["havock8sexperiments"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["chaos.havock8s.io"]
+  resources: ["havock8sexperiments/status"]
+  verbs: ["get", "update", "patch"] 

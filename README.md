@@ -1,5 +1,21 @@
 # havock8s
 
+
+
+ ██╗  ██╗  █████╗  ██╗   ██╗  ██████╗   ██████╗ ██╗  ██╗  █████╗  ███████╗
+ ██║  ██║ ██╔══██╗ ██║   ██║ ██╔═══██╗ ██╔════╝ ██║ ██╔╝ ██╔══██╗ ██╔════╝
+ ███████║ ███████║ ██║   ██║ ██║   ██║ ██║      █████╔╝  ╚█████╔╝ ███████╗
+ ██╔══██║ ██╔══██║ ╚██╗ ██╔╝ ██║   ██║ ██║      ██╔═██╗  ██╔══██╗ ╚════██║
+ ██║  ██║ ██║  ██║  ╚████╔╝  ╚██████╔╝ ╚██████╗ ██║  ██╗ ╚█████╔╝ ███████║
+ ╚═╝  ╚═╝ ╚═╝  ╚═╝   ╚═══╝    ╚═════╝   ╚═════╝ ╚═╝  ╚═╝  ╚════╝  ╚══════╝
+ 
+
+[![Build Status](https://github.com/havock8s/havock8s/workflows/CI/badge.svg)](https://github.com/havock8s/havock8s/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/havock8s/havock8s)](https://goreportcard.com/report/github.com/havock8s/havock8s)
+[![GoDoc](https://pkg.go.dev/badge/github.com/havock8s/havock8s)](https://pkg.go.dev/github.com/havock8s/havock8s)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/havock8s/havock8s)](go.mod)
+
 havock8s is a cloud-native chaos engineering framework specifically designed for stateful applications running on Kubernetes. While many existing chaos engineering tools focus on stateless microservices, havock8s specializes in testing and enhancing the resilience of stateful components such as databases, caching systems, and persistent storage.
 
 ## Features
@@ -47,7 +63,7 @@ kubectl apply -f https://raw.githubusercontent.com/havock8s/havock8s/main/config
 #### Using Helm
 
 ```bash
-helm repo add havock8s https://havock8s.github.io/charts
+helm repo add havock8s https://charts.havock8s.io
 helm install havock8s havock8s/havock8s
 ```
 
@@ -78,7 +94,7 @@ spec:
 
 ## Documentation
 
-For detailed documentation, examples, and guides, visit [the official documentation](https://havock8s.github.io).
+For detailed documentation, examples, and guides, visit [the official documentation](https://docs.havock8s.io).
 
 ## Contributing
 
@@ -86,4 +102,66 @@ Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) 
 
 ## License
 
-havock8s is open-source software licensed under the Apache License 2.0. 
+havock8s is open-source software licensed under the Apache License 2.0.
+
+## Chaos Experiments
+
+### Pod Failure Chaos
+The pod failure chaos experiment successfully terminated a target pod in the test namespace. This experiment type is designed to test application resilience by simulating pod failures in a controlled manner.
+
+#### Example Usage
+
+1. Create a test pod:
+```bash
+kubectl run test-pod --image=nginx -n test
+```
+
+2. Apply the chaos experiment:
+```yaml
+apiVersion: chaos.havock8s.io/v1alpha1
+kind: Havock8sExperiment
+metadata:
+  name: test-pod-failure
+  namespace: test
+spec:
+  chaosType: PodFailure
+  duration: 5m
+  intensity: 1
+  safety:
+    autoRollback: true
+  target:
+    name: test-pod
+    namespace: test
+    targetType: Pod
+```
+
+#### Experiment Behavior
+- **Target Selection**: The experiment identifies and targets the specified pod by name and namespace
+- **Termination**: Pods are terminated immediately (gracePeriodSeconds: 0) or with a specified grace period
+- **Duration**: The experiment maintains the "Running" state for the specified duration
+- **Auto Rollback**: If configured (autoRollback: true), the experiment will automatically restore the pod after completion
+
+#### Monitoring
+You can monitor the experiment progress using:
+```bash
+# Check experiment status
+kubectl get havock8sexperiment test-pod-failure -n test -o yaml
+
+# View controller logs
+kubectl logs -n havock8s-system deployment/havock8s-controller-manager
+```
+
+#### Expected Outcomes
+- The target pod will be terminated
+- The experiment will show "Running" status
+- Target resources will be marked as "Targeted" in the experiment status
+- Controller logs will show successful execution of the chaos injection
+
+#### Troubleshooting
+If the experiment doesn't work as expected:
+1. Verify the target pod exists and is running
+2. Check controller logs for any errors
+3. Ensure the experiment has the correct target name and namespace
+4. Verify the controller has necessary permissions to delete pods
+
+The controller logs showed successful execution of the chaos injection, with proper tracking of the target pod and experiment status. 

@@ -55,7 +55,7 @@ For more flexibility, easier upgrades, and configuration management, Helm is rec
 
 ```bash
 # Add the Havock8s Helm repository
-helm repo add havock8s https://havock8s.github.io/charts
+helm repo add havock8s https://charts.havock8s.io
 
 # Update your Helm repositories
 helm repo update

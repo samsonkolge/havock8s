@@ -22,7 +22,7 @@ func (i *PodFailureInjector) SetClient(c client.Client) {
 }
 
 // Inject applies pod failure chaos
-func (i *PodFailureInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
+func (i *PodFailureInjector) Inject(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, log logr.Logger) error {
 	log.Info("Injecting pod failure chaos")
 
 	// Get parameters with defaults
@@ -65,9 +65,48 @@ func (i *PodFailureInjector) Inject(ctx context.Context, experiment *chaosv1alph
 
 		switch target.Kind {
 		case "Pod":
-			if err := i.terminatePod(ctx, experiment, target, gracePeriod, forceDelete, log); err != nil {
-				return err
+			// Get the pod
+			pod := &corev1.Pod{}
+			err := i.client.Get(ctx, types.NamespacedName{
+				Namespace: target.Namespace,
+				Name:      target.Name,
+			}, pod)
+			if err != nil {
+				if client.IgnoreNotFound(err) == nil {
+					// Pod is already gone, consider this a success
+					log.Info("Pod already deleted", "pod", target.Name)
+					podsTerminated++
+					if podsTerminated >= podCount {
+						log.Info("Reached desired pod termination count", "count", podCount)
+						return nil
+					}
+					continue
+				}
+				return fmt.Errorf("failed to get pod %s/%s: %w", target.Namespace, target.Name, err)
 			}
+
+			// Delete the pod
+			deleteOptions := client.DeleteOptions{}
+			if gracePeriod >= 0 {
+				deleteOptions.GracePeriodSeconds = &gracePeriod
+			}
+
+			// Delete the pod with specified options
+			if err := i.client.Delete(ctx, pod, &deleteOptions); err != nil {
+				if client.IgnoreNotFound(err) == nil {
+					// Pod is already gone, consider this a success
+					log.Info("Pod already deleted during deletion attempt", "pod", target.Name)
+					podsTerminated++
+					if podsTerminated >= podCount {
+						log.Info("Reached desired pod termination count", "count", podCount)
+						return nil
+					}
+					continue
+				}
+				log.Error(err, "Failed to delete pod", "pod", target.Name)
+				return fmt.Errorf("failed to delete pod %s/%s: %w", target.Namespace, target.Name, err)
+			}
+
 			podsTerminated++
 			if podsTerminated >= podCount {
 				log.Info("Reached desired pod termination count", "count", podCount)
@@ -91,8 +130,45 @@ func (i *PodFailureInjector) Inject(ctx context.Context, experiment *chaosv1alph
 					Status:    "Targeted",
 				}
 
-				if err := i.terminatePod(ctx, experiment, podTarget, gracePeriod, forceDelete, log); err != nil {
-					return err
+				// Get the pod
+				currentPod := &corev1.Pod{}
+				err := i.client.Get(ctx, types.NamespacedName{
+					Namespace: podTarget.Namespace,
+					Name:      podTarget.Name,
+				}, currentPod)
+				if err != nil {
+					if client.IgnoreNotFound(err) == nil {
+						// Pod is already gone, consider this a success
+						log.Info("Pod already deleted", "pod", podTarget.Name)
+						podsTerminated++
+						if podsTerminated >= podCount {
+							log.Info("Reached desired pod termination count", "count", podCount)
+							return nil
+						}
+						continue
+					}
+					return fmt.Errorf("failed to get pod %s/%s: %w", podTarget.Namespace, podTarget.Name, err)
+				}
+
+				// Delete the pod
+				deleteOptions := client.DeleteOptions{}
+				if gracePeriod >= 0 {
+					deleteOptions.GracePeriodSeconds = &gracePeriod
+				}
+
+				if err := i.client.Delete(ctx, currentPod, &deleteOptions); err != nil {
+					if client.IgnoreNotFound(err) == nil {
+						// Pod is already gone, consider this a success
+						log.Info("Pod already deleted during deletion attempt", "pod", podTarget.Name)
+						podsTerminated++
+						if podsTerminated >= podCount {
+							log.Info("Reached desired pod termination count", "count", podCount)
+							return nil
+						}
+						continue
+					}
+					log.Error(err, "Failed to delete pod", "pod", podTarget.Name)
+					return fmt.Errorf("failed to delete pod %s/%s: %w", podTarget.Namespace, podTarget.Name, err)
 				}
 
 				podsTerminated++
@@ -111,16 +187,35 @@ func (i *PodFailureInjector) Inject(ctx context.Context, experiment *chaosv1alph
 	return nil
 }
 
-// Cleanup is a no-op for pod failure as pods are already terminated
-func (i *PodFailureInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.StatefulChaosExperiment, log logr.Logger) error {
-	log.Info("No cleanup needed for pod failure, Kubernetes will recreate StatefulSet pods")
+// Cleanup removes pod failure annotations
+func (i *PodFailureInjector) Cleanup(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, log logr.Logger) error {
+	log.Info("Cleaning up pod failure annotations")
+
+	for _, target := range experiment.Status.TargetResources {
+		log.Info("Processing target for pod failure cleanup", "kind", target.Kind, "name", target.Name, "namespace", target.Namespace)
+
+		switch target.Kind {
+		case "Pod":
+			if err := i.cleanupPodFailure(ctx, experiment, target, log); err != nil {
+				return err
+			}
+		case "StatefulSet":
+			if err := i.cleanupStatefulSetFailure(ctx, experiment, target, log); err != nil {
+				return err
+			}
+		default:
+			log.Info("Unsupported target kind for pod failure cleanup", "kind", target.Kind)
+		}
+	}
+
+	log.Info("Pod failure cleanup completed")
 	return nil
 }
 
 // terminatePod terminates a specific pod
 func (i *PodFailureInjector) terminatePod(
 	ctx context.Context,
-	experiment *chaosv1alpha1.StatefulChaosExperiment,
+	experiment *chaosv1alpha1.Havock8sExperiment,
 	target chaosv1alpha1.TargetResourceStatus,
 	gracePeriod int64,
 	forceDelete bool,
@@ -136,6 +231,29 @@ func (i *PodFailureInjector) terminatePod(
 	}, pod)
 	if err != nil {
 		return fmt.Errorf("failed to get pod %s/%s: %w", target.Namespace, target.Name, err)
+	}
+
+	// Validate failure mode
+	failureMode, ok := experiment.Spec.Parameters["failureMode"]
+	if !ok {
+		return fmt.Errorf("failureMode parameter is required")
+	}
+	if failureMode != "crash" && failureMode != "terminate" {
+		return fmt.Errorf("invalid failure mode: %s", failureMode)
+	}
+
+	// Initialize annotations if nil
+	if pod.Annotations == nil {
+		pod.Annotations = make(map[string]string)
+	}
+
+	// Set pod failure annotation
+	pod.Annotations["havock8s.io/pod-failure"] = "true"
+	pod.Annotations["havock8s.io/pod-failure-mode"] = failureMode
+
+	// Update the pod with new annotations
+	if err := i.client.Update(ctx, pod); err != nil {
+		return fmt.Errorf("failed to update pod %s/%s: %w", target.Namespace, target.Name, err)
 	}
 
 	// Record pod state before deletion
@@ -189,4 +307,56 @@ func (i *PodFailureInjector) findStatefulSetPods(ctx context.Context, namespace,
 	}
 
 	return statefulSetPods, nil
+}
+
+// cleanupPodFailure removes pod failure annotations
+func (i *PodFailureInjector) cleanupPodFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+	// Get the pod
+	pod := &corev1.Pod{}
+	err := i.client.Get(ctx, types.NamespacedName{
+		Namespace: target.Namespace,
+		Name:      target.Name,
+	}, pod)
+	if err != nil {
+		return fmt.Errorf("failed to get pod %s/%s: %w", target.Namespace, target.Name, err)
+	}
+
+	// Remove pod failure annotations if they exist
+	if pod.Annotations != nil {
+		delete(pod.Annotations, "havock8s.io/pod-failure")
+		delete(pod.Annotations, "havock8s.io/pod-failure-mode")
+	}
+
+	// Update the pod to remove annotations
+	if err := i.client.Update(ctx, pod); err != nil {
+		return fmt.Errorf("failed to update pod %s/%s: %w", target.Namespace, target.Name, err)
+	}
+
+	log.Info("Removed pod failure annotations", "pod", target.Name)
+	return nil
+}
+
+// cleanupStatefulSetFailure removes pod failure annotations from all pods in a StatefulSet
+func (i *PodFailureInjector) cleanupStatefulSetFailure(ctx context.Context, experiment *chaosv1alpha1.Havock8sExperiment, target chaosv1alpha1.TargetResourceStatus, log logr.Logger) error {
+	// Find all pods belonging to the StatefulSet
+	pods, err := i.findStatefulSetPods(ctx, target.Namespace, target.Name)
+	if err != nil {
+		return fmt.Errorf("failed to find pods for StatefulSet %s/%s: %w", target.Namespace, target.Name, err)
+	}
+
+	// Clean up each pod
+	for _, pod := range pods {
+		podTarget := chaosv1alpha1.TargetResourceStatus{
+			Kind:      "Pod",
+			Name:      pod.Name,
+			Namespace: pod.Namespace,
+			UID:       string(pod.UID),
+		}
+		if err := i.cleanupPodFailure(ctx, experiment, podTarget, log); err != nil {
+			return err
+		}
+	}
+
+	log.Info("Removed pod failure annotations from StatefulSet", "statefulset", target.Name)
+	return nil
 }

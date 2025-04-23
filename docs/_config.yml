@@ -1,8 +1,8 @@
 theme: jekyll-theme-cayman
-title: Havock8s
+title: Havock8s Documentation
 description: A cloud-native chaos engineering framework for stateful applications on Kubernetes
 baseurl: "/havock8s"
-url: "https://samsonkolge.github.io"
+url: "https://docs.havock8s.io"
 show_downloads: true
 github:
   repository_url: https://github.com/samsonkolge/havock8s

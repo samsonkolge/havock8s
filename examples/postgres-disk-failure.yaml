@@ -1,5 +1,5 @@
-apiVersion: chaos.statefulchaos.io/v1alpha1
-kind: StatefulChaosExperiment
+apiVersion: chaos.havock8s.io/v1alpha1
+kind: Havock8sExperiment
 metadata:
   name: postgres-disk-failure
 spec:
@@ -30,4 +30,4 @@ spec:
       - type: Namespace
         value: kube-system  # never affect system namespaces
       - type: Label
-        value: statefulchaos.io/protected=true  # protected resources 
+        value: havock8s.io/protected=true  # protected resources 

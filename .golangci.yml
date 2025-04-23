@@ -1,0 +1,63 @@
+linters:
+  enable:
+    - gosimple
+    - govet
+    - errcheck
+    - staticcheck
+    - ineffassign
+    - gosec
+    - gofmt
+    - goimports
+    - misspell
+    - gocritic
+    - bodyclose
+    - unconvert
+    - goconst
+    - gocognit
+    - gocyclo
+    - dupl
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - varcheck
+    - whitespace
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  gocritic:
+    enabled-tags:
+      - performance
+      - style
+      - experimental
+  gosec:
+    excludes:
+      - G104 # Errors unhandled
+      - G107 # Potential HTTP request made with variable url
+      - G402 # TLS InsecureSkipVerify set true
+  govet:
+    check-shadowing: true
+
+run:
+  deadline: 5m
+  tests: true
+  skip-dirs:
+    - vendor
+    - testdata
+    - third_party
+    - generated
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - dupl
+        - gosec
+  max-per-linter: 0
+  max-same-issues: 0
+  new: false 
