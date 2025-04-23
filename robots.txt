@@ -1,1 +1,1 @@
-Sitemap: https://samsonkolge.github.io/havock8s/sitemap.xml
+Sitemap: https://docs.havock8s.io/havock8s/sitemap.xml
