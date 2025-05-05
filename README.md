@@ -1,14 +1,5 @@
 # havock8s
 
-```
- ██╗  ██╗  █████╗  ██╗   ██╗  ██████╗   ██████╗ ██╗  ██╗  █████╗  ███████╗
- ██║  ██║ ██╔══██╗ ██║   ██║ ██╔═══██╗ ██╔════╝ ██║ ██╔╝ ██╔══██╗ ██╔════╝
- ███████║ ███████║ ██║   ██║ ██║   ██║ ██║      █████╔╝  ╚█████╔╝ ███████╗
- ██╔══██║ ██╔══██║ ╚██╗ ██╔╝ ██║   ██║ ██║      ██╔═██╗  ██╔══██╗ ╚════██║
- ██║  ██║ ██║  ██║  ╚████╔╝  ╚██████╔╝ ╚██████╗ ██║  ██╗ ╚█████╔╝ ███████║
- ╚═╝  ╚═╝ ╚═╝  ╚═╝   ╚═══╝    ╚═════╝   ╚═════╝ ╚═╝  ╚═╝  ╚════╝  ╚══════╝
-```
-
 [![Build Status](https://github.com/havock8s/havock8s/workflows/CI/badge.svg)](https://github.com/havock8s/havock8s/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/havock8s/havock8s)](https://goreportcard.com/report/github.com/havock8s/havock8s)
 [![GoDoc](https://pkg.go.dev/badge/github.com/havock8s/havock8s)](https://pkg.go.dev/github.com/havock8s/havock8s)
